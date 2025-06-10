@@ -1,0 +1,12 @@
+.text-input {
+    border: none;
+    border-bottom: 1px solid var(--clr2);
+    background-color: transparent;
+    width: 100%;
+}
+
+.text-input:focus {
+    border-bottom: 1px solid var(--clr4);
+    outline: none;
+}
+
