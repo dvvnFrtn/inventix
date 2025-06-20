@@ -10,3 +10,20 @@
     outline: none;
 }
 
+#menu {
+    height: 100px;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+#menu {
+    width: 0px;
+}
+
+/* Tablet ke atas (>=768px) */
+@media (min-width: 768px) {
+    #menu {
+        width: 200px;
+    }
+}

@@ -15,6 +15,10 @@ class AuthAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!session()->has('is_admin')) {
+            return redirect()->to('/');
+        }
+
         return $next($request);
     }
 }

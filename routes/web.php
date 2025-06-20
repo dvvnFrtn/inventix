@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [ClientHomeController::class, 'index']);
 Route::get('login', [ClientAuthController::class, 'index']);
 Route::post('auth', [ServerAuthController::class, 'submit']);
+Route::get('logout', function () { session()->flush(); });
 
 Route::middleware([AuthGuruMiddleware::class])->group(function () {
     Route::get('dashboard-guru', [ClientGuruController::class, 'index']);

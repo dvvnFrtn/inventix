@@ -77,6 +77,17 @@
 .btn-outline-clr5 { background-color: transparent; color: var(--clr5); border: 1px solid var(--clr5); }
 .btn-outline-clr5:hover { background-color: var(--clr5); color: var(--clr3); }
 
+.border-top-clr1 { border-top: 1px solid var(--clr1); }
+.border-top-clr2 { border-top: 1px solid var(--clr2); }
+.border-top-clr3 { border-top: 1px solid var(--clr3); }
+.border-top-clr4 { border-top: 1px solid var(--clr4); }
+.border-top-clr5 { border-top: 1px solid var(--clr5); }
+.border-bottom-clr1 { border-bottom: 1px solid var(--clr1); }
+.border-bottom-clr2 { border-bottom: 1px solid var(--clr2); }
+.border-bottom-clr3 { border-bottom: 1px solid var(--clr3); }
+.border-bottom-clr4 { border-bottom: 1px solid var(--clr4); }
+.border-bottom-clr5 { border-bottom: 1px solid var(--clr5); }
+
 .btn-isi { background-color: var(--clr2); color: var(--clr1); }
 .btn-isi:hover { background-color: var(--clr2); filter: brightness(90%); }
 .btn-bisi { background-color: var(--clr4); color: var(--clr1); }
