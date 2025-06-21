@@ -11,10 +11,13 @@ use App\Http\Middleware\AuthGuruMiddleware;
 use App\Http\Middleware\AuthPetugasMiddleware;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', [ClientHomeController::class, 'index']);
-Route::get('login', [ClientAuthController::class, 'index']);
+Route::get('/login', [ClientAuthController::class, 'index']);
 Route::post('auth', [ServerAuthController::class, 'submit']);
-Route::get('logout', function () { session()->flush(); });
+Route::get('logout', function () {
+    session()->flush();
+});
 
 Route::middleware([AuthGuruMiddleware::class])->group(function () {
     Route::get('dashboard-guru', [ClientGuruController::class, 'index']);
@@ -28,5 +31,10 @@ Route::middleware([AuthAdminMiddleware::class])->group(function () {
     Route::get('dashboard-admin', [ClientAdminController::class, 'index']);
 });
 
-Route::get('s', function() { return session()->all(); });
-Route::get('d', function() { session()->flush(); return redirect()->back(); });
+Route::get('s', function () {
+    return session()->all();
+});
+Route::get('d', function () {
+    session()->flush();
+    return redirect()->back();
+});
