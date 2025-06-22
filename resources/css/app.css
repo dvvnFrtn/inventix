@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import "tw-animate-css";
 
@@ -114,7 +115,45 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@theme {
+  --font-sans: "Poppins", sans-serif;
+
+  --color-itxPrimary-50: #EEF1FA;
+  --color-itxPrimary-100: #DBE5F4;
+  --color-itxPrimary-200: #AFC7E6;
+  --color-itxPrimary-300: #6998D1;
+  --color-itxPrimary-400: #32639C;
+  --color-itxPrimary-500: #213E60;
+  --color-itxPrimary-600: #183051;
+  --color-itxPrimary-700: #142742;
+  --color-itxPrimary-800: #132236;
+  --color-itxPrimary-900: #131F30;
+
+  --color-itxAccentOne-50: #F6FBFA;
+  --color-itxAccentOne-100: #E2F3F0;
+  --color-itxAccentOne-200: #C3E8E2;
+  --color-itxAccentOne-300: #A0D6D0;
+  --color-itxAccentOne-400: #77BBB4;
+  --color-itxAccentOne-500: #4AB5AC;
+  --color-itxAccentOne-600: #39918C;
+  --color-itxAccentOne-700: #327572;
+  --color-itxAccentOne-800: #2D5E5C;
+  --color-itxAccentOne-900: #2B4E4D;
+
+  --color-itxAccentTwo-50: #FDF8EF;
+  --color-itxAccentTwo-100: #FBEED9;
+  --color-itxAccentTwo-200: #F6DBB2;
+  --color-itxAccentTwo-300: #F0C181;
+  --color-itxAccentTwo-400: #E99E4E;
+  --color-itxAccentTwo-500: #E68C3A;
+  --color-itxAccentTwo-600: #D66A20;
+  --color-itxAccentTwo-700: #B1521D;
+  --color-itxAccentTwo-800: #8D411F;
+  --color-itxAccentTwo-900: #72381C;
 }
