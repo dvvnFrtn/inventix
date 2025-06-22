@@ -1,0 +1,94 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Link, usePage } from "@inertiajs/react";
+import { Archive, ArrowLeft, ArrowRight, Bell, BookOpen, Home, LayoutGrid, Users } from "lucide-react";
+import React from "react";
+
+const menuItems = [
+    { icon: <Home size={24} />, label: 'Dashboard', href: '/admin/dashboard' },
+    { icon: <BookOpen size={24} />, label: 'Transaksi', href: '/admin/transactions' },
+    { icon: <Users size={24} />, label: 'User', href: '/admin/users' },
+    { icon: <LayoutGrid size={24} />, label: 'Kategori', href: '/admin/categories' },
+    { icon: <Archive size={24} />, label: 'Inventaris', href: '/admin/inventories' },
+]
+
+function Sidebar({ collapsed, onCollapsed }) {
+    const { url } = usePage()
+    return (
+        <div
+            className={`${collapsed ? 'w-fit' : 'w-64'
+                } h-screen fixed z-10 transition-all duration-300 ease-in-out bg-itxPrimary-500 text-itxSurface flex flex-col justify-between px-6`}
+        >
+            <div>
+                <div className={`flex items-center ${!collapsed ? 'justify-between' : 'justify-center'} py-12`}>
+                    {!collapsed && <h1 className="text-2xl font-semibold text-itxAccentOne-500">Inventix</h1>}
+                    <Button
+                        onClick={() => onCollapsed()}
+                        variant={'accentOne'}
+                        className={'size-14 text-itxPrimary-500'}
+                    >
+                        {collapsed ? <ArrowRight size={24} /> : <ArrowLeft size={24} />}
+                    </Button>
+                </div>
+
+                <div className="border-t border-slate-500 mb-12" />
+
+                <nav className="flex flex-col gap-4">
+                    {menuItems.map((item, index) => {
+                        const isActive = url.startsWith(item.href)
+                        return (
+                            <Link
+                                key={index}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-6 px-4 py-4 rounded-full transition-all duration-300 ease-out",
+                                    isActive
+                                        ? "bg-itxAccentTwo-500 text-itxPrimary-500 rounded-2xl font-semibold"
+                                        : "bg-itxPrimary-500 hover:bg-itxPrimary-600 text-itxSurface"
+                                )}
+                            >
+                                {item.icon}
+                                {!collapsed && <span className="text-sm">{item.label}</span>}
+                            </Link>
+                        )
+                    })}
+                </nav>
+            </div>
+        </div>
+    )
+}
+
+export default function DashboardLayout({ title, description, children }) {
+    const [collapsed, setCollapsed] = React.useState(false)
+    return (
+        <div className="flex min-h-screen bg-itxPrimary-500">
+            <Sidebar collapsed={collapsed} onCollapsed={() => setCollapsed(!collapsed)} />
+            <main
+                className={`${!collapsed ? 'ml-64' : 'ml-[104px]'} flex-1 py-6 px-16 transition-all duration-300 bg-itxSurface rounded-s-4xl`}
+            >
+                <div className="flex items-center justify-between mb-10">
+                    <div className="flex flex-col gap-2 items-center">
+                        <h2 className="text-4xl font-medium text-slate-800">{title}</h2>
+                        {description ?? (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
+                    </div>
+                    <div className="flex flex-row gap-6 items-center">
+                        <Button size={'icon'} variant={'secondary'}>
+                            <Bell size={24} />
+                        </Button>
+                        <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col gap-2">
+                            <p className="text-slate-500">Achmed Hibatillah</p>
+                            <Badge className={'bg-violet-200 text-violet-500 font-medium'}>Admin</Badge>
+                        </div>
+                    </div>
+                </div>
+                {children}
+            </main>
+        </div>
+    )
+}

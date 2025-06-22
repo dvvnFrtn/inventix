@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,7 +16,7 @@ return new class extends Migration
             $table->string('transaction_desc', 500)->nullable();
             $table->date('transaction_start');
             $table->date('transaction_end');
-            $table->integer('transaction_status');
+            $table->integer('transaction_status'); // 0: belum terkembalikan 1: terkembalikan
             $table->string('user_id', 20);
             $table->string('inventarisd_id', 20);
             $table->timestamps();
