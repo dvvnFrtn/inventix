@@ -16,6 +16,17 @@ Route::get('/auth', function () {
     return Inertia::render('Auth/AuthPage');
 });
 
+Route::get('/admin/dashboard', function () {
+    return Inertia::render('Admin/DashboardPage');
+});
+Route::get('/admin/transactions', function () {
+    return Inertia::render('Admin/TransactionPage');
+});
+
+Route::get('/admin/inventories', function () {
+    return Inertia::render('Admin/InventoryPage');
+});
+
 Route::get('/', [ClientHomeController::class, 'index']);
 Route::get('/login', [ClientAuthController::class, 'index']);
 Route::post('auth', [ServerAuthController::class, 'submit']);
