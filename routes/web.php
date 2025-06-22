@@ -10,7 +10,11 @@ use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
 use App\Http\Middleware\AuthPetugasMiddleware;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
+Route::get('/auth', function () {
+    return Inertia::render('Auth/AuthPage');
+});
 
 Route::get('/', [ClientHomeController::class, 'index']);
 Route::get('/login', [ClientAuthController::class, 'index']);
