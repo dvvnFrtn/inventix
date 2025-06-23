@@ -2,14 +2,9 @@ import { Head } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "../DashboardLayout";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
 import Combobox from "@/components/ui/combobox";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
 import RightSheet from "@/components/ui/right-sheet";
-import LoginForm from "../Auth/LoginForm";
 import InventoryAddForm from "./InventoryAddForm";
 
 export default function InventoryPage() {
@@ -55,7 +50,6 @@ export default function InventoryPage() {
 
                         <Input placeholder='Cari barang disini...' />
                     </div>
-
                     <RightSheet
                         triggerLabel={'Tambah Barang'}
                         triggerVariant={'accentTwo'}
@@ -64,9 +58,6 @@ export default function InventoryPage() {
                     >
                         <InventoryAddForm />
                     </RightSheet>
-
-
-
                 </div>
                 {/* eof-Action-Container */}
 
@@ -135,3 +126,5 @@ function InventoryCard() {
         </div>
     )
 }
+
+export { InventoryCard };

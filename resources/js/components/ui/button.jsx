@@ -16,7 +16,7 @@ const buttonVariants = cva(
         accentTwo:
           "bg-itxAccentTwo-500 text-primary-foreground shadow-xs hover:bg-itxAccentTwo-600 hover:rounded-lg",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-rose-800 text-white shadow-xs hover:bg-rose-800/70 hover:rounded-lg focus-visible:ring-rose-800/20 dark:focus-visible:ring-rose-800/40 dark:bg-rose-800/60",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:

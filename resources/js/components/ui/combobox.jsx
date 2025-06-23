@@ -12,6 +12,7 @@ export default function Combobox({
     value,
     onChange,
     placeholder,
+    width = 'w-[200px]'
 }) {
     const [open, setOpen] = useState(false)
 
@@ -22,7 +23,7 @@ export default function Combobox({
                     variant={'secondary'}
                     role='combobox'
                     aria-expanded={open}
-                    className={'w-[200px] justify-between'}
+                    className={`${width} justify-between`}
                 >
                     {
                         value ? data.find((d) => d.value === value)?.label : buttonLabel
@@ -30,9 +31,9 @@ export default function Combobox({
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className={'w-[200px]'}>
+            <PopoverContent className={width}>
                 <Command>
-                    <CommandInput placeholder={placeholder} className="h-9" />
+                    <CommandInput placeholder={placeholder} className="h-9 text-sm px-2" />
                     <CommandList>
                         <CommandEmpty>
                             {emptyMessage}

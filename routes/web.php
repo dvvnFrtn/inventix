@@ -16,15 +16,22 @@ Route::get('/auth', function () {
     return Inertia::render('Auth/AuthPage');
 });
 
+// ADMIN - DASHBOARD 
 Route::get('/admin/dashboard', function () {
     return Inertia::render('Admin/DashboardPage');
 });
+
+// ADMIN - PEMINJAMAN
 Route::get('/admin/transactions', function () {
     return Inertia::render('Admin/TransactionPage');
 });
 
+// ADMIN - PEMGELOLAAN INVENTARIS
 Route::get('/admin/inventories', function () {
     return Inertia::render('Admin/InventoryPage');
+});
+Route::get('/admin/inventories/001', function () {
+    return Inertia::render('Admin/InventoryDetailPage');
 });
 
 Route::get('/', [ClientHomeController::class, 'index']);
