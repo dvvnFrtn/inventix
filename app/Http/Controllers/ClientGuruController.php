@@ -33,7 +33,14 @@ class ClientGuruController extends Controller
 
     public function detail_barang($code)
     {
-        $detail_barang = Inventaris::getDetailByCode($code, 'terpinjam');
+        // Contoh tanpa filter:
+        $detail_barang = Inventaris::getDetailByCode($code);
+
+        // Contoh terfilter:
+            // $detail_barang = Inventaris::getDetailByCode($code, 'terpinjam', 3);
+            // $detail_barang = Inventaris::getDetailByCode($code, 'terpinjam', null);
+            // $detail_barang = Inventaris::getDetailByCode($code, null, 3);
+            
         dd($detail_barang);
     }
 }
