@@ -69,9 +69,9 @@ export default function DashboardLayout({ title, description, children }) {
                 className={`${!collapsed ? 'ml-64' : 'ml-[104px]'} flex-1 py-6 px-16 transition-all duration-300 bg-itxSurface rounded-s-4xl`}
             >
                 <div className="flex items-center justify-between mb-10">
-                    <div className="flex flex-col gap-2 items-center">
+                    <div className="flex flex-col gap-2 justify-center">
                         <h2 className="text-4xl font-medium text-slate-800">{title}</h2>
-                        {description ?? (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
+                        {description && (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
                     </div>
                     <div className="flex flex-row gap-6 items-center">
                         <Button size={'icon'} variant={'secondary'}>
