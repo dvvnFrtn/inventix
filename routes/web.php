@@ -5,12 +5,20 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientGuruController;
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientPetugasController;
+use App\Http\Controllers\Inventix\InventarisController;
 use App\Http\Controllers\ServerAuthController;
 use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
 use App\Http\Middleware\AuthPetugasMiddleware;
+use App\Http\Resources\InventarisResource;
+use App\Models\Inventaris;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::prefix('inventaris')->group(function () {
+    Route::get('/', [InventarisController::class, 'index']);
+    Route::get('/{code}', [InventarisController::class, 'show']);
+});
 
 Route::get('/auth', function () {
     return Inertia::render('Auth/AuthPage');

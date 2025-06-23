@@ -83,7 +83,7 @@ const dummy_units = [
     }
 ]
 
-export default function IventoryDetailPage() {
+export default function IventoryDetailPage({ inventaris }) {
     // Filtering-State
     const [selectedStatus, setSelectedStatus] = React.useState('')
     const [selectedCondition, setSelectedCondition] = React.useState('')
