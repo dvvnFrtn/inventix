@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Str;
 
 class Inventaris extends Model
 {
@@ -18,6 +19,15 @@ class Inventaris extends Model
         'inventaris_desc',
         'category_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->inventaris_id = (string) Str::uuid();
+        });
+    }
 
     public function category()
     {

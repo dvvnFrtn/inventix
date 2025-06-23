@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientGuruController;
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientPetugasController;
 use App\Http\Controllers\Inventix\InventarisController;
+use App\Http\Controllers\Inventix\UserController;
 use App\Http\Controllers\ServerAuthController;
 use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
@@ -18,6 +19,10 @@ use Inertia\Inertia;
 Route::prefix('inventaris')->group(function () {
     Route::get('/', [InventarisController::class, 'index']);
     Route::get('/{code}', [InventarisController::class, 'show']);
+});
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
 });
 
 Route::get('/auth', function () {

@@ -11,14 +11,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('transaction', function (Blueprint $table) {
-            $table->string('transaction_id', 20)->primary();
+            $table->uuid('transaction_id')->primary();
             $table->integer('transaction_code')->unique(); // 6 digit
             $table->string('transaction_desc', 500)->nullable();
             $table->date('transaction_start');
             $table->date('transaction_end');
             $table->integer('transaction_status'); // 0: belum terkembalikan 1: terkembalikan
-            $table->string('user_id', 20);
-            $table->string('inventarisd_id', 20);
+            $table->uuid('user_id');
+            $table->uuid('inventarisd_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('users');

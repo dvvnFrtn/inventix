@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Inventarisd extends Model
 {
@@ -19,6 +20,15 @@ class Inventarisd extends Model
         'inventaris_id',
         'kondisi_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->inventarisd_id = (string) Str::uuid();
+        });
+    }
 
     public function inventaris()
     {

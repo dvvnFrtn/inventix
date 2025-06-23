@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Transaction extends Model
 {
@@ -22,6 +23,15 @@ class Transaction extends Model
         'inventarisd_id',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->transaction_id = (string) Str::uuid();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
@@ -37,21 +47,21 @@ class Transaction extends Model
         $query = self::where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->with(['user', 'inventarisd.inventaris.category']);
-    
+
         // Sub-menu filter
         if ($status === 'sedang') {
             // Barang belum melewati batas waktu
             $query->where('transaction_status', 0)
-                  ->where('transaction_end', '>=', Carbon::now());
+                ->where('transaction_end', '>=', Carbon::now());
         } elseif ($status === 'terlambat') {
             // Barang melewati batas waktu
             $query->where('transaction_status', 0)
-                  ->where('transaction_end', '<', Carbon::now());
+                ->where('transaction_end', '<', Carbon::now());
         } elseif ($status === 'selesai') {
             // Barang sudah dikembalikan
             $query->where('transaction_status', 1);
         }
-    
+
         return $query->get()->map(function ($item) {
             return [
                 'code' => $item->transaction_code,
@@ -71,16 +81,16 @@ class Transaction extends Model
             ];
         });
     }
-    
+
 
     private static function checkDue($transaction_end)
     {
         $now = Carbon::now();
         $end = Carbon::parse($transaction_end);
-    
+
         return [
             'status' => $now->greaterThan($end),
             'range' => $now->diffInMinutes($end)
         ];
-    }    
+    }
 }
