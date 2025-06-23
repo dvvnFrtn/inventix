@@ -23,6 +23,9 @@ class InventarisDResource extends JsonResource
             'condition' => KondisiResource::make(
                 $this->whenLoaded('kondisi')
             ),
+            'inventaris' => InventarisResource::make(
+                $this->whenLoaded('inventaris')
+            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

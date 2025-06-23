@@ -95,4 +95,32 @@ class Transaction extends Model
             'range' => $now->diffInMinutes($end)
         ];
     }
+
+
+    public function getLateMessageAttribute(): ?string
+    {
+        $now = Carbon::now();
+        $end = Carbon::parse($this->transaction_end);
+
+        $diffInSeconds = $now->diffInSeconds($end, false);
+
+        if ($diffInSeconds >= 0) {
+            return null;
+        }
+
+        $abs = abs($diffInSeconds);
+        $days = floor($abs / 86400);
+        $hours = floor(($abs % 86400) / 3600);
+        $minutes = floor(($abs % 3600) / 60);
+
+        $timeString = '';
+        if ($days > 0)
+            $timeString .= "$days hari ";
+        if ($hours > 0)
+            $timeString .= "$hours jam ";
+        if ($minutes > 0 || $timeString === '')
+            $timeString .= "$minutes menit";
+
+        return "Terlambat $timeString";
+    }
 }

@@ -56,7 +56,7 @@ class InventarisController extends Controller
             ])
             ->withSummary();
 
-        $inventaris = $query->get();
+        $inventaris = $query->first();
         $conditions = Kondisi::all();
         $statuses = [
             [
@@ -74,7 +74,7 @@ class InventarisController extends Controller
         ];
 
         return Response::json([
-            'inventaris' => InventarisResource::collection(resource: $inventaris),
+            'inventaris' => InventarisResource::make(resource: $inventaris),
             'condition_options' => KondisiResource::collection(resource: $conditions),
             'status_options' => $statuses,
         ]);

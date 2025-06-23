@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,6 +28,7 @@ class TransactionResource extends JsonResource
             'unit' => InventarisDResource::make(
                 $this->whenLoaded('inventarisd')
             ),
+            'late_message' => $this->late_message,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];
