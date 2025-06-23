@@ -42,7 +42,10 @@ Route::get('logout', function () {
 });
 
 Route::middleware([AuthGuruMiddleware::class])->group(function () {
-    Route::get('dashboard-guru', [ClientGuruController::class, 'index']);
+    Route::get('dashboard-guru', [ClientGuruController::class, 'dashboard']);
+    Route::get('guru/daftar-barang', [ClientGuruController::class, 'daftar_barang']);
+    Route::get('guru/detail-barang/{slug}', [ClientGuruController::class, 'detail_barang']);
+    Route::get('guru/riwayat', [ClientGuruController::class, 'riwayat']);
 });
 
 Route::middleware([AuthPetugasMiddleware::class])->group(function () {
@@ -60,3 +63,5 @@ Route::get('d', function () {
     session()->flush();
     return redirect()->back();
 });
+
+Route::get('dd', [ClientGuruController::class, 'dashboard']);

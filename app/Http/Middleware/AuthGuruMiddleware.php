@@ -15,7 +15,7 @@ class AuthGuruMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ( session()->has('is_guru')) {
+        if (!session()->has('is_guru')) {
             return redirect()->to('login')->with('warning', 'Anda belum terautentikasi.');
         }
         return $next($request);
