@@ -20,6 +20,11 @@ class Inventarisd extends Model
         'kondisi_id',
     ];
 
+    public function inventaris()
+    {
+        return $this->belongsTo(Inventaris::class, 'inventaris_id', 'inventaris_id');
+    }
+
     public function kondisi()
     {
         return $this->belongsTo(Kondisi::class, 'kondisi_id', 'kondisi_id');

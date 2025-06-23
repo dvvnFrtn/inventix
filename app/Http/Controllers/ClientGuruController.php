@@ -43,4 +43,13 @@ class ClientGuruController extends Controller
             
         dd($detail_barang);
     }
+
+    public function riwayat()
+    {
+        // status: null (all), sedang, terlambat, selesai
+        $status = 'terlambat';
+        $riwayat = Transaction::getAllRiwayatByUser($this->user['user_id'], $status);
+
+        dd($riwayat);
+    }
 }
