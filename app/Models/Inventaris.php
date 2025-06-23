@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Str;
 
 class Inventaris extends Model
 {
+    use HasFactory;
     protected $table = 'inventaris';
     protected $primaryKey = 'inventaris_id';
     public $incrementing = false;

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $roles = ['admin', 'petugas', 'guru'];
         return [
-            //
+            'user_email' => $this->faker->unique()->safeEmail(),
+            'user_pass' => Hash::make('password'), // password default untuk testing
+            'user_fullname' => $this->faker->name(),
+            'user_role' => $this->faker->randomElement($roles),
         ];
     }
 }

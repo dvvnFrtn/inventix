@@ -17,7 +17,9 @@ class InventarisFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'inventaris_code' => $this->faker->unique()->numberBetween(100, 999),
+            'inventaris_name' => ucfirst($this->faker->words(2, true)),
+            'inventaris_desc' => $this->faker->optional()->sentence(),
         ];
     }
 }

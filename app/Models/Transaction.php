@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
 class Transaction extends Model
 {
+    use HasFactory;
     protected $table = 'transaction';
     protected $primaryKey = 'transaction_id';
     public $incrementing = false;

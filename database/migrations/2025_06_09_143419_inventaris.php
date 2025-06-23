@@ -14,7 +14,7 @@ return new class extends Migration {
         Schema::create('inventaris', function (Blueprint $table) {
             $table->uuid('inventaris_id')->primary();
             $table->integer('inventaris_code')->unique(); // 3 digit
-            $table->string('inventaris_name', 20);
+            $table->string('inventaris_name', 255);
             $table->string('inventaris_desc', 500)->nullable();
             $table->uuid('category_id');
             $table->timestamps();

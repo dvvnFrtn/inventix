@@ -17,7 +17,11 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'transaction_code' => $this->faker->unique()->numberBetween(100000, 999999), // 6 digit unik
+            'transaction_desc' => $this->faker->optional()->sentence(),
+            'transaction_start' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'transaction_end' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'transaction_status' => $this->faker->randomElement([0, 1]),
         ];
     }
 }

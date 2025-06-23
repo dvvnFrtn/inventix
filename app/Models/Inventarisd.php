@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
 class Inventarisd extends Model
 {
+    use HasFactory;
     protected $table = 'inventarisd';
     protected $primaryKey = 'inventarisd_id';
     public $incrementing = false;
