@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Users;
-use Illuminate\Foundation\Auth\User;
+use App\Models\User;
+use Illuminate\Foundation\Auth\Users;
 use Illuminate\Http\Request;
 
 class ServerAuthController extends Controller
@@ -17,13 +17,11 @@ class ServerAuthController extends Controller
             'email.required' => 'Email harus diisi *',
             'password.required' => 'Password harus diisi *',
         ]);
-        
-        // dd(Users::where('user_email', $request->email)->first());
 
-        $exits = Users::where('user_email', $request->email)->exists();
+        $exits = User::where('user_email', $request->email)->exists();
 
         if ($exits) {
-            $user_collect = Users::where('user_email', $request->email)->first();
+            $user_collect = User::where('user_email', $request->email)->first();
 
             $user = [
                 'user_id' => $user_collect->user_id,

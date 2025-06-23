@@ -15,7 +15,13 @@ class Inventarisd extends Model
         'inventarisd_code',
         'inventarisd_label',
         'inventarisd_desc',
+        'inventarisd_status',
         'inventaris_id',
         'kondisi_id',
-    ];  
+    ];
+
+    public function kondisi()
+    {
+        return $this->belongsTo(Kondisi::class, 'kondisi_id', 'kondisi_id');
+    }
 }

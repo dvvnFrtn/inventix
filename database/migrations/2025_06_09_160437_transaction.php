@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('transaction', function (Blueprint $table) {
             $table->string('transaction_id', 20)->primary();
-            $table->integer('transaction_code')->unique();
+            $table->integer('transaction_code')->unique(); // 6 digit
             $table->string('transaction_desc', 500)->nullable();
             $table->date('transaction_start');
             $table->date('transaction_end');
