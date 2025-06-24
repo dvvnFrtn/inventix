@@ -13,9 +13,17 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with('user')
-            ->with('inventarisd.inventaris')
-            ->get();
+        $auth = session()->get('user');
+        $role = $auth['user_role'];
+
+        $query = Transaction::with('user')
+            ->with('inventarisd.inventaris');
+
+        if ($role === 'guru') {
+            $query->where('user_id', $auth['user_id']);
+        }
+
+        $transactions = $query->get();
 
         return Inertia::render(
             'TransactionPage',
