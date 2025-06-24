@@ -21,8 +21,8 @@ return new class extends Migration {
             $table->uuid('inventarisd_id');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('user_id')->on('users');
-            $table->foreign('inventarisd_id')->references('inventarisd_id')->on('inventarisd');
+            $table->foreign('user_id')->references('user_id')->on('users')->cascadeOnDelete();
+            $table->foreign('inventarisd_id')->references('inventarisd_id')->on('inventarisd')->cascadeOnDelete();
         });
     }
 

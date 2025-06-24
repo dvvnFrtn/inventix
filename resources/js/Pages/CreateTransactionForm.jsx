@@ -6,7 +6,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// description, user, tx-start, tx-end
 const FormSchema = z.object({
     unit_id: z.string(),
     description: z.string(),

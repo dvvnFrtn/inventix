@@ -13,8 +13,11 @@ import UpdateInventoryUnitForm from "./UpdateInventoryUnitForm";
 import CreateTransactionForm from "./CreateTransactionForm";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import UpdateInventoryForm from "./UpdateInventoryForm";
 
-export default function IventoryDetailPage({ inventaris, condition_options, status_options }) {
+export default function IventoryDetailPage({
+    inventaris, condition_options, status_options, categories_options
+}) {
     const { props } = usePage()
     const flash = props.flash
 
@@ -27,9 +30,10 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
 
     // Dialog-State
     const [openDeleteUnitDialog, setOpenDeleteUnitDialog] = React.useState(false)
-    const [openDeleteInventoryDialog, setOpenDeleteInventoryDialog] = React.useState(false)
     const [openCreateUnitSheet, setOpenCreateUnitSheet] = React.useState(false)
     const [openUpdateUnitSheet, setOpenUpdateUnitSheet] = React.useState(false)
+    const [openDeleteInventoryDialog, setOpenDeleteInventoryDialog] = React.useState(false)
+    const [openUpdateInventorySheet, setOpenUpdateInventorySheet] = React.useState(false)
 
     // Data-State
     const inventory = inventaris?.data
@@ -72,8 +76,6 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
         }
     }, [flash])
 
-    console.log(selectedUnit)
-
     return (
         <>
             <Head title="Inventix - Detail Barang" />
@@ -86,6 +88,7 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
                         <InventoryDetailCard
                             inventory={inventory}
                             onDelete={() => setOpenDeleteInventoryDialog(true)}
+                            onUpdate={() => setOpenUpdateInventorySheet(true)}
                         />
                     </div>
                     <Table
@@ -112,17 +115,20 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
                                     />
                                     <Input placeholder="Cari unit..." />
                                 </div>
-                                <CreateUnitRightSheet
-                                    inventory_id={inventory?.id}
-                                    conditions={condition_options?.data}
-                                    open={openCreateUnitSheet}
-                                    onOpenChange={setOpenCreateUnitSheet}
-                                    trigger={(
-                                        <Button variant="accentTwo" onClick={() => setOpenCreateUnitSheet(true)}>
-                                            Tambah Unit
-                                        </Button>
-                                    )}
-                                />
+                                {
+                                    props.auth?.user_role !== 'guru' &&
+                                    <CreateUnitRightSheet
+                                        inventory_id={inventory?.id}
+                                        conditions={condition_options?.data}
+                                        open={openCreateUnitSheet}
+                                        onOpenChange={setOpenCreateUnitSheet}
+                                        trigger={(
+                                            <Button variant="accentTwo" onClick={() => setOpenCreateUnitSheet(true)}>
+                                                Tambah Unit
+                                            </Button>
+                                        )}
+                                    />
+                                }
                             </div>
                         }
                     >
@@ -132,7 +138,7 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
                                 <th className="px-6 py-4 font-medium min-w-[250px]">Label</th>
                                 <th className="px-6 py-4 font-medium">Kondisi</th>
                                 <th className="px-6 py-4 font-medium">Status</th>
-                                <th className="px-6 py-4 text-right font-medium">Aksi</th>
+                                {props.auth?.user_role !== 'guru' && <th className="px-6 py-4 text-right font-medium">Aksi</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -144,40 +150,43 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
                                             <td className="px-6 py-4">{unit?.label === "" || unit?.label === null ? 'Tidak berlabel' : unit?.label}</td>
                                             <td className="px-6 py-4">{unit?.condition?.name?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</td>
                                             <td className="px-6 py-4"> {unit?.status?.charAt(0).toUpperCase() + unit?.status?.slice(1)}</td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex justify-end gap-2">
+                                            {
+                                                props.auth?.user_role !== 'guru' &&
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex justify-end gap-2">
 
-                                                    <Button
-                                                        size="sm"
-                                                        variant="accentOne"
-                                                        onClick={() => {
-                                                            setSelectedUnit(unit)
-                                                            setOpenUpdateUnitSheet(true)
-                                                        }}
-                                                    >
-                                                        <Edit />
-                                                    </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="accentOne"
+                                                            onClick={() => {
+                                                                setSelectedUnit(unit)
+                                                                setOpenUpdateUnitSheet(true)
+                                                            }}
+                                                        >
+                                                            <Edit />
+                                                        </Button>
 
-                                                    <Button
-                                                        size="sm"
-                                                        variant="destructive"
-                                                        onClick={() => {
-                                                            setSelectedUnit(unit)
-                                                            setOpenDeleteUnitDialog(true)
-                                                        }}
-                                                    >
-                                                        <Trash2 />
-                                                    </Button>
-                                                    <CreateTransactionRightSheet
-                                                        selectedUnit={unit}
-                                                        trigger={(
-                                                            <Button size="sm" variant="primary">
-                                                                Pinjamkan
-                                                            </Button>
-                                                        )}
-                                                    />
-                                                </div>
-                                            </td>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            onClick={() => {
+                                                                setSelectedUnit(unit)
+                                                                setOpenDeleteUnitDialog(true)
+                                                            }}
+                                                        >
+                                                            <Trash2 />
+                                                        </Button>
+                                                        <CreateTransactionRightSheet
+                                                            selectedUnit={unit}
+                                                            trigger={(
+                                                                <Button size="sm" variant="primary">
+                                                                    Pinjamkan
+                                                                </Button>
+                                                            )}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            }
                                         </tr>
                                     )))
                                 : (
@@ -200,12 +209,29 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
                         open={openDeleteInventoryDialog}
                         onOpenChange={setOpenDeleteInventoryDialog}
                         deletedInventory={inventory}
+                        onSucces={() => setOpenDeleteInventoryDialog(false)}
                     />
                     <UpdateUnitRightSheet
                         updatedUnit={selectedUnit}
                         conditions={condition_options?.data}
                         open={openUpdateUnitSheet}
                         onOpenChange={setOpenUpdateUnitSheet}
+                        trigger={(
+                            <Button
+                                size="sm"
+                                variant="accentOne"
+                                className={'hidden'}
+                                onClick={() => setOpenUpdateUnitSheet(true)}
+                            >
+                                <Edit />
+                            </Button>
+                        )}
+                    />
+                    <UpdateInventoryRightSheet
+                        updatedInventory={inventory}
+                        categories={categories_options?.data}
+                        open={openUpdateInventorySheet}
+                        onOpenChange={setOpenUpdateInventorySheet}
                         trigger={(
                             <Button
                                 size="sm"
@@ -225,8 +251,10 @@ export default function IventoryDetailPage({ inventaris, condition_options, stat
 
 function InventoryDetailCard({
     inventory,
-    onDelete
+    onDelete,
+    onUpdate
 }) {
+    const { props } = usePage()
     return (
         /* sof-Container */
         <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300">
@@ -261,30 +289,41 @@ function InventoryDetailCard({
             {/* sof-Summary-Container */}
             <div className="grid grid-cols-3 text-center text-sm border-t border-slate-300">
                 <div className="py-6 text-itxAccentTwo-500">
-                    <p className="font-medium text-lg">{inventory?.summary?.count_tersedia}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_tersedia ?? 0}</p>
                     <p className="font-base">Tersedia</p>
                 </div>
                 <div className="py-6 text-itxAccentOne-500">
-                    <p className="font-medium text-lg">{inventory?.summary?.count_terpinjam}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_terpinjam ?? 0}</p>
                     <p className="font-base">Dipinjam</p>
                 </div>
                 <div className="py-6 text-itxPrimary-500">
-                    <p className="font-medium text-lg">{inventory?.summary?.count_tiada}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_tiada ?? 0}</p>
                     <p className="font-base">Tiada</p>
                 </div>
             </div>
             {/* eof-Summary-Container */}
 
-            <div className="flex gap-2 p-6 items-center justify-center">
-                <Button variant={'accentOne'} className={'flex-1'}>Edit</Button>
-                <Button
-                    variant={'destructive'}
-                    className={'flex-1'}
-                    onClick={onDelete}
-                >
-                    Hapus
-                </Button>
-            </div>
+            {
+                props.auth?.user_role !== 'guru' &&
+                <div className="flex gap-2 p-6 items-center justify-center">
+                    <Button
+                        key={1}
+                        variant={'accentOne'}
+                        className={'flex-1'}
+                        onClick={onUpdate}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        key={2}
+                        variant={'destructive'}
+                        className={'flex-1'}
+                        onClick={onDelete}
+                    >
+                        Hapus
+                    </Button>
+                </div>
+            }
         </div>
     )
 }
@@ -292,8 +331,17 @@ function InventoryDetailCard({
 function DeleteInventoryAlertDialog({
     open,
     onOpenChange,
-    deletedInventory
+    deletedInventory,
+    onSucces
 }) {
+    const handleDelete = () => {
+        router.delete(`/inventaris/${deletedInventory?.id}`, {
+            onSuccess: onSucces,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[425px]">
@@ -309,7 +357,7 @@ function DeleteInventoryAlertDialog({
                     <DialogClose asChild>
                         <Button variant={'secondary'} >Batal</Button>
                     </DialogClose>
-                    <Button variant={'destructive'}>Hapus</Button>
+                    <Button variant={'destructive'} onClick={handleDelete}>Hapus</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -427,6 +475,35 @@ function CreateTransactionRightSheet({
                     </SheetDescription>
                 </SheetHeader>
                 <CreateTransactionForm selectedUnit={selectedUnit} />
+            </SheetContent>
+        </Sheet>
+    )
+}
+
+function UpdateInventoryRightSheet({
+    trigger,
+    updatedInventory,
+    categories,
+    open,
+    onOpenChange,
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetTrigger asChild>
+                {trigger}
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Edit Barang</SheetTitle>
+                    <SheetDescription>
+                        Isi form dibawah ini untuk memperbarui data barang
+                    </SheetDescription>
+                </SheetHeader>
+                <UpdateInventoryForm
+                    updatedInventory={updatedInventory}
+                    categories={categories}
+                    onClose={onOpenChange}
+                />
             </SheetContent>
         </Sheet>
     )

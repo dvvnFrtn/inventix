@@ -32,6 +32,8 @@ class InventarisController extends Controller
 
         $categories = Category::all();
 
+        $auth = session()->get('user');
+
         return Inertia::render('InventoryPage', [
             'inventariss' => InventarisResource::collection(resource: $inventariss),
             'category_options' => CategoryResource::collection(resource: $categories),
@@ -59,6 +61,7 @@ class InventarisController extends Controller
 
         $inventaris = $query->first();
         $conditions = Kondisi::all();
+        $categories = Category::all();
         $statuses = [
             [
                 'id' => 1,
@@ -78,6 +81,7 @@ class InventarisController extends Controller
             'inventaris' => InventarisResource::make(resource: $inventaris),
             'condition_options' => KondisiResource::collection(resource: $conditions),
             'status_options' => $statuses,
+            'categories_options' => CategoryResource::collection($categories)
         ]);
     }
 
@@ -128,5 +132,48 @@ class InventarisController extends Controller
         $unit->delete();
 
         return redirect()->back()->with('success', 'Unit barang berhasil dihapus.');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'inventaris_name' => 'nullable|string|max:255',
+            'inventaris_desc' => 'nullable|string|max:500',
+            'category_id' => 'required|string|exists:category,category_id',
+        ]);
+
+        Inventaris::where('inventaris_id', $id)->update([
+            'inventaris_name' => $validated['inventaris_name'],
+            'inventaris_desc' => $validated['inventaris_desc'],
+            'category_id' => $validated['category_id'],
+        ]);
+
+        return redirect()->back()->with('success', 'Barang berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $inventory = Inventaris::findOrFail($id);
+        $inventory->delete();
+
+        return redirect('/inventaris')->with('success', 'Barang berhasil dihapus.');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'inventaris_name' => 'nullable|string|max:255',
+            'inventaris_desc' => 'nullable|string|max:500',
+            'category_id' => 'required|string|exists:category,category_id',
+        ]);
+
+        Inventaris::create([
+            'inventaris_code' => fake()->unique()->numberBetween(100, 999),
+            'inventaris_name' => $validated['inventaris_name'],
+            'inventaris_desc' => $validated['inventaris_desc'],
+            'category_id' => $validated['category_id'],
+        ]);
+
+        return redirect()->back()->with('success', 'Barang berhasil diperbarui.');
     }
 }

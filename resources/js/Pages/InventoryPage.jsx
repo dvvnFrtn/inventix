@@ -1,13 +1,29 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import Combobox from "@/components/ui/combobox";
-import RightSheet from "@/components/ui/right-sheet";
-import InventoryAddForm from "./InventoryAddForm";
+import { toast } from "sonner";
+import CreateInventoryForm from "./InventoryAddForm";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function InventoryPage({ inventariss, category_options }) {
+    const { props } = usePage()
+    const flash = props.flash
+
+    const [openCreateInventorySheet, setOpenCreateInventorySheet] = React.useState(false)
+
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success)
+        }
+        if (flash?.error) {
+            toast.error(flash.error)
+        }
+    }, [flash])
+
     const [selectedCategory, setSelectedCategory] = React.useState('')
     const inventories = inventariss?.data
     const categories = category_options?.data?.map(c => ({ value: String(c.code), label: c.name }))
@@ -46,14 +62,19 @@ export default function InventoryPage({ inventariss, category_options }) {
 
                         <Input placeholder='Cari barang disini...' />
                     </div>
-                    <RightSheet
-                        triggerLabel={'Tambah Barang'}
-                        triggerVariant={'accentTwo'}
-                        sheetTitle={'Tambah Barang'}
-                        sheetDescription={'Isi form dibawah ini untuk menambahkan data barang'}
-                    >
-                        <InventoryAddForm />
-                    </RightSheet>
+                    {
+                        props.auth?.user_role !== 'guru' &&
+                        <CreateInventoryRightSheet
+                            categories={category_options?.data}
+                            open={openCreateInventorySheet}
+                            onOpenChange={setOpenCreateInventorySheet}
+                            trigger={(
+                                <Button variant="accentTwo" onClick={() => setOpenCreateInventorySheet(true)}>
+                                    Tambah Unit
+                                </Button>
+                            )}
+                        />
+                    }
                 </div>
                 {/* eof-Action-Container */}
 
@@ -110,15 +131,15 @@ function InventoryCard({ inventaris }) {
                 {/* sof-Summary-Container */}
                 <div className="grid grid-cols-3 text-center text-sm border-t border-slate-300">
                     <div className="py-6 text-itxAccentTwo-500">
-                        <p className="font-medium text-lg">{inventaris?.summary?.count_tersedia}</p>
+                        <p className="font-medium text-lg">{inventaris?.summary?.count_tersedia ?? 0}</p>
                         <p className="font-base">Tersedia</p>
                     </div>
                     <div className="py-6 text-itxAccentOne-500">
-                        <p className="font-medium text-lg">{inventaris?.summary?.count_terpinjam}</p>
+                        <p className="font-medium text-lg">{inventaris?.summary?.count_terpinjam ?? 0}</p>
                         <p className="font-base">Terpinjam</p>
                     </div>
                     <div className="py-6 text-itxPrimary-500">
-                        <p className="font-medium text-lg">{inventaris?.summary?.count_tiada}</p>
+                        <p className="font-medium text-lg">{inventaris?.summary?.count_tiada ?? 0}</p>
                         <p className="font-base">Tiada</p>
                     </div>
                 </div>
@@ -126,5 +147,32 @@ function InventoryCard({ inventaris }) {
 
             </div>
         </Link>
+    )
+}
+
+function CreateInventoryRightSheet({
+    trigger,
+    categories,
+    open,
+    onOpenChange,
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetTrigger asChild>
+                {trigger}
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Tambah Barang</SheetTitle>
+                    <SheetDescription>
+                        Isi form dibawah ini untuk menambahkan data barang
+                    </SheetDescription>
+                </SheetHeader>
+                <CreateInventoryForm
+                    categories={categories}
+                    onClose={onOpenChange}
+                />
+            </SheetContent>
+        </Sheet>
     )
 }

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthPetugasMiddleware
+class AuthMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,8 +15,8 @@ class AuthPetugasMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!session()->has('is_petugas')) {
-            return redirect()->to('login')->with('warning', 'Anda belum terautentikasi.');
+        if (!session()->has('user')) {
+            return redirect()->to('auth')->with('warning', 'Anda belum terautentikasi.');
         }
         return $next($request);
     }

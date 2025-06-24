@@ -18,21 +18,22 @@ const FormSchema = z.object({
     })
 })
 
-export default function CreateInventoryForm({
+export default function UpdateInventoryForm({
+    updatedInventory,
     categories,
     onClose
 }) {
     const form = useForm({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            name: '',
-            description: '',
-            category_id: ''
+            name: updatedInventory?.name ?? '',
+            description: updatedInventory?.desc ?? '',
+            category_id: updatedInventory?.category?.id
         },
     })
 
     const onSubmit = (data) => {
-        router.post(`/inventaris`, {
+        router.put(`/inventaris/${updatedInventory?.id}`, {
             inventaris_name: data.name,
             inventaris_desc: data.description,
             category_id: data.category_id,

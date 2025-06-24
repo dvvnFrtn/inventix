@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from '@/components/ui/button'
+import { router } from '@inertiajs/react'
 
 const FormSchema = z.object({
     email: z.string().nonempty({
@@ -32,7 +33,12 @@ export default function LoginForm() {
     })
 
     const onSubmit = (data) => {
-        console.log(data)
+        router.post('/auth', {
+            email: data.email,
+            password: data.password
+        }, {
+            onError: (e) => console.log(e)
+        })
     }
 
     return (
@@ -66,7 +72,6 @@ export default function LoginForm() {
                 />
                 <div className="flex flex-col gap-6 mt-6">
                     <Button className={'w-full'} variant={'accentTwo'} type="submit">Submit</Button>
-                    <Button variant={'link'} className={'text-itxAccentTwo-500'}>Lupa password?</Button>
                 </div>
             </form>
         </Form>

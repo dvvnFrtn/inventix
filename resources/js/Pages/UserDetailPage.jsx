@@ -1,14 +1,16 @@
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
 import Table from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import UpdateUserForm from "./UpdateUserForm";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function UserDetailPage({ user: rawUser }) {
     const user = rawUser?.data
     const transactions = user?.transactions
-    console.log(user)
 
     const formatDate = (rawDate) => {
         const date = new Date(rawDate)
@@ -20,6 +22,9 @@ export default function UserDetailPage({ user: rawUser }) {
         return formatted
     }
 
+    const [openUpdateUserSheet, setOpenUpdateUserSheet] = React.useState(false)
+    const [openDeleteUserDialog, setOpenDeleteUserDialog] = React.useState(false)
+
     return (
         <>
             <Head title="Inventix - Detail User" />
@@ -30,6 +35,12 @@ export default function UserDetailPage({ user: rawUser }) {
                 <div className="flex w-full gap-6">
                     <UserDetailCard
                         user={user}
+                        onUpdate={() => {
+                            setOpenUpdateUserSheet(true)
+                        }}
+                        onDelete={() => {
+                            setOpenDeleteUserDialog(true)
+                        }}
                     />
                     <Table
                         toolbar={<Input placeholder="Cari peminjaman..." />}
@@ -78,13 +89,34 @@ export default function UserDetailPage({ user: rawUser }) {
                             }
                         </tbody>
                     </Table>
+                    <UpdateUserRightSheet
+                        open={openUpdateUserSheet}
+                        onOpenChange={setOpenUpdateUserSheet}
+                        updatedUser={user}
+                        trigger={(
+                            <Button
+                                size="sm"
+                                variant="accentOne"
+                                className={'hidden'}
+                                onClick={() => setOpenUpdateUserSheet(true)}
+                            >
+                                Edit User
+                            </Button>
+                        )}
+                    />
+                    <DeleteUserAlertDialog
+                        open={openDeleteUserDialog}
+                        onOpenChange={setOpenDeleteUserDialog}
+                        deletedUser={user}
+                        onSucces={() => setOpenDeleteUserDialog(false)}
+                    />
                 </div>
             </DashboardLayout >
         </>
     )
 }
 
-function UserDetailCard({ user }) {
+function UserDetailCard({ user, onUpdate, onDelete }) {
 
     const formatDate = (rawDate) => {
         const date = new Date(rawDate)
@@ -121,16 +153,81 @@ function UserDetailCard({ user }) {
                 <Button
                     variant={'accentOne'}
                     className={'flex-1'}
+                    onClick={onUpdate}
                 >
                     Edit
                 </Button>
                 <Button
                     variant={'destructive'}
                     className={'flex-1'}
+                    onClick={onDelete}
                 >
                     Hapus
                 </Button>
             </div>
         </div>
+    )
+}
+
+function UpdateUserRightSheet({
+    trigger,
+    open,
+    onOpenChange,
+    updatedUser
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetTrigger asChild>
+                {trigger}
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Edit User</SheetTitle>
+                    <SheetDescription>
+                        Isi form dibawah ini untuk memperbarui data user
+                    </SheetDescription>
+                </SheetHeader>
+                <UpdateUserForm
+                    updatedUser={updatedUser}
+                    onClose={onOpenChange}
+                />
+            </SheetContent>
+        </Sheet>
+    )
+}
+
+function DeleteUserAlertDialog({
+    open,
+    onOpenChange,
+    deletedUser,
+    onSucces
+}) {
+    const handleDelete = () => {
+        router.delete(`/users/${deletedUser?.id}`, {
+            onSuccess: onSucces,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>
+                        Hapus User
+                    </DialogTitle>
+                    <DialogDescription>
+                        {`Apakah anda yakin ingin menghapus user ${deletedUser?.fullname}?`}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant={'secondary'} >Batal</Button>
+                    </DialogClose>
+                    <Button variant={'destructive'} onClick={handleDelete}>Hapus</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
