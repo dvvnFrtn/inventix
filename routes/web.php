@@ -18,6 +18,9 @@ use Inertia\Inertia;
 Route::prefix('inventaris')->group(function () {
     Route::get('/', [InventarisController::class, 'index']);
     Route::get('/{code}', [InventarisController::class, 'show']);
+    Route::post('/storeUnit', [InventarisController::class, 'storeUnit']);
+    Route::delete('/destroyUnit/{id}', [InventarisController::class, 'destroyUnit']);
+    Route::put('/updateUnit/{id}', [InventarisController::class, 'updateUnit']);
 });
 
 Route::prefix('users')->group(function () {

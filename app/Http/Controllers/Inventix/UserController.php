@@ -7,11 +7,12 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Response;
 
 class UserController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $query = User::orderBy('created_at');
 
@@ -36,7 +37,8 @@ class UserController extends Controller
             ],
         ];
 
-        return Response::json(
+        return Inertia::render(
+            'UserPage',
             [
                 'users' => UserResource::collection($users),
                 'role_options' => $role_options
@@ -50,7 +52,8 @@ class UserController extends Controller
             ->with('transaction.inventarisd.inventaris');
 
         $user = $query->first();
-        return Response::json(
+        return Inertia::render(
+            'UserDetailPage',
             [
                 'user' => UserResource::make($user)
             ]

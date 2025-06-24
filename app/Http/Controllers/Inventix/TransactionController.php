@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Response;
 
 class TransactionController extends Controller
@@ -16,7 +17,8 @@ class TransactionController extends Controller
             ->with('inventarisd.inventaris')
             ->get();
 
-        return Response::json(
+        return Inertia::render(
+            'TransactionPage',
             [
                 'transactions' => TransactionResource::collection($transactions),
             ]

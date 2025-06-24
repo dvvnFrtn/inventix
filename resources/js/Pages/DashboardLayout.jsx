@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link, usePage } from "@inertiajs/react";
 import { Archive, ArrowLeft, ArrowRight, Bell, BookOpen, Home, LayoutGrid, Users } from "lucide-react";
+import { Toaster } from "sonner"
 import React from "react";
 
 const menuItems = [
-    { icon: <Home size={24} />, label: 'Dashboard', href: '/admin/dashboard' },
-    { icon: <BookOpen size={24} />, label: 'Transaksi', href: '/admin/transactions' },
-    { icon: <Users size={24} />, label: 'User', href: '/admin/users' },
-    { icon: <LayoutGrid size={24} />, label: 'Kategori', href: '/admin/categories' },
-    { icon: <Archive size={24} />, label: 'Inventaris', href: '/admin/inventories' },
+    { icon: <Home size={24} />, label: 'Dashboard', href: '/dashboard' },
+    { icon: <BookOpen size={24} />, label: 'Peminjaman', href: '/transactions' },
+    { icon: <Users size={24} />, label: 'User', href: '/users' },
+    { icon: <Archive size={24} />, label: 'Inventaris', href: '/inventaris' },
 ]
 
 function Sidebar({ collapsed, onCollapsed }) {
@@ -40,6 +40,7 @@ function Sidebar({ collapsed, onCollapsed }) {
                         const isActive = url.startsWith(item.href)
                         return (
                             <Link
+                                preserveState
                                 key={index}
                                 href={item.href}
                                 className={cn(
@@ -61,34 +62,46 @@ function Sidebar({ collapsed, onCollapsed }) {
 }
 
 export default function DashboardLayout({ title, description, children }) {
-    const [collapsed, setCollapsed] = React.useState(false)
+    const [collapsed, setCollapsed] = React.useState(() => {
+        const saved = localStorage.getItem('sidebar-collapsed')
+        return saved === 'true'
+    })
+
+    const toggleSidebar = () => {
+        localStorage.setItem('sidebar-collapsed', String(!collapsed))
+        setCollapsed(!collapsed)
+    }
+
     return (
-        <div className="flex min-h-screen bg-itxPrimary-500">
-            <Sidebar collapsed={collapsed} onCollapsed={() => setCollapsed(!collapsed)} />
-            <main
-                className={`${!collapsed ? 'ml-64' : 'ml-[104px]'} flex-1 py-6 px-16 transition-all duration-300 bg-itxSurface rounded-s-4xl`}
-            >
-                <div className="flex items-center justify-between mb-10">
-                    <div className="flex flex-col gap-2 justify-center">
-                        <h2 className="text-4xl font-medium text-slate-800">{title}</h2>
-                        {description && (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
-                    </div>
-                    <div className="flex flex-row gap-6 items-center">
-                        <Button size={'icon'} variant={'secondary'}>
-                            <Bell size={24} />
-                        </Button>
-                        <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col gap-2">
-                            <p className="text-slate-500">Achmed Hibatillah</p>
-                            <Badge className={'bg-violet-200 text-violet-500 font-medium'}>Admin</Badge>
+        <>
+            <Toaster richColors position="top-right" />
+            <div className="flex min-h-screen bg-itxPrimary-500">
+                <Sidebar collapsed={collapsed} onCollapsed={toggleSidebar} />
+                <main
+                    className={`${!collapsed ? 'ml-64' : 'ml-[104px]'} flex-1 py-6 px-16 transition-all duration-300 bg-itxSurface rounded-s-4xl`}
+                >
+                    <div className="flex items-center justify-between mb-10">
+                        <div className="flex flex-col gap-2 justify-center">
+                            <h2 className="text-4xl font-medium text-slate-800">{title}</h2>
+                            {description && (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
+                        </div>
+                        <div className="flex flex-row gap-6 items-center">
+                            <Button size={'icon'} variant={'secondary'}>
+                                <Bell size={24} />
+                            </Button>
+                            <Avatar>
+                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col gap-2">
+                                <p className="text-slate-500">Achmed Hibatillah</p>
+                                <Badge className={'bg-violet-200 text-violet-500 font-medium'}>Admin</Badge>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {children}
-            </main>
-        </div>
+                    {children}
+                </main>
+            </div>
+        </>
     )
 }

@@ -1,103 +1,78 @@
-import { Head } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import React from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
 import Table from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Edit, Trash2 } from "lucide-react";
 import Combobox from "@/components/ui/combobox";
-import { Dialog, DialogContent, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import CreateInventoryUnitForm from "./CreateIventoryUnitForm";
 import UpdateInventoryUnitForm from "./UpdateInventoryUnitForm";
 import CreateTransactionForm from "./CreateTransactionForm";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
-const dummy_statuses = [
-    {
-        value: '0001',
-        label: 'Tersedia'
-    },
-    {
-        value: '0002',
-        label: 'Tiada'
-    },
-    {
-        value: '0003',
-        label: 'Terpinjam'
-    }
-]
+export default function IventoryDetailPage({ inventaris, condition_options, status_options }) {
+    const { props } = usePage()
+    const flash = props.flash
 
-const dummy_conditions = [
-    {
-        value: '0001',
-        label: 'Bagus'
-    },
-    {
-        value: '0002',
-        label: 'Agak cacat'
-    },
-    {
-        value: '0003',
-        label: 'Cacat'
-    }
-]
-
-const dummy_inventory = {
-    id: 'ab0026489',
-    code: 634,
-    name: 'Sapu',
-    desc: 'Lorem ipsum dolor sit amet amit zbyangyik enumeration nihao',
-    category: 'Kebersihan',
-    created_at: Date.now(),
-    updated_at: Date.now(),
-    count_tersedia: 45,
-    count_dipinjam: 19,
-    count_tiada: 2
-}
-
-const dummy_units = [
-    {
-        id: 'a0009',
-        code: 63401,
-        label: 'Sapu Unit 1',
-        desc: 'Lorem ipsum dolor sit amet amit zbyangyik enumeration nihao',
-        status: 'tersedia',
-        condition: 'sangat baik',
-    },
-    {
-        id: 'a0010',
-        code: 63402,
-        label: 'Sapu Unit 2',
-        desc: 'Lorem ipsum dolor sit amet amit zbyangyik enumeration nihao',
-        status: 'dipinjam',
-        condition: 'baik',
-    },
-    {
-        id: 'a0011',
-        code: 63403,
-        label: 'Sapu Unit 3',
-        desc: 'Lorem ipsum dolor sit amet amit zbyangyik enumeration nihao',
-        status: 'dipinjam',
-        condition: 'baik',
-    }
-]
-
-export default function IventoryDetailPage({ inventaris }) {
     // Filtering-State
-    const [selectedStatus, setSelectedStatus] = React.useState('')
-    const [selectedCondition, setSelectedCondition] = React.useState('')
+    const [filters, setFilters] = React.useState({
+        status: '',
+        condition: '',
+    })
     const [selectedUnit, setSelectedUnit] = React.useState(null)
 
     // Dialog-State
     const [openDeleteUnitDialog, setOpenDeleteUnitDialog] = React.useState(false)
     const [openDeleteInventoryDialog, setOpenDeleteInventoryDialog] = React.useState(false)
+    const [openCreateUnitSheet, setOpenCreateUnitSheet] = React.useState(false)
+    const [openUpdateUnitSheet, setOpenUpdateUnitSheet] = React.useState(false)
 
     // Data-State
-    const [units, setUnits] = React.useState(dummy_units)
-    const [inventory, setInventory] = React.useState(dummy_inventory)
-    const [statuses, setStatuses] = React.useState(dummy_statuses)
-    const [conditions, setConditions] = React.useState(dummy_conditions)
+    const inventory = inventaris?.data
+    const units = inventory?.units
+    const statuses = status_options?.map(i => ({ value: i?.name, label: i?.name }))
+    const conditions = condition_options?.data?.map(i => ({ value: String(i?.id), label: i?.name }))
+
+    const applyFilters = (newFilters = {}) => {
+        const mergedFilters = {
+            ...filters,
+            ...newFilters,
+        }
+
+        setFilters(mergedFilters)
+
+        router.get(`/inventaris/${inventory?.code}`, {
+            status: mergedFilters.status !== '' ? mergedFilters.status : undefined,
+            condition: mergedFilters.condition !== '' ? Number(mergedFilters.condition) : undefined,
+        }, {
+            replace: true,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
+    const handleStatusChange = (val) => {
+        applyFilters({ status: val })
+    }
+
+    const handleConditionChange = (val) => {
+        applyFilters({ condition: val })
+    }
+
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success)
+        }
+        if (flash?.error) {
+            toast.error(flash.error)
+        }
+    }, [flash])
+
+    console.log(selectedUnit)
 
     return (
         <>
@@ -107,10 +82,12 @@ export default function IventoryDetailPage({ inventaris }) {
                 description={'Berikut informasi detail dan unit dari barang'}
             >
                 <div className="flex w-full gap-6">
-                    <InventoryDetailCard
-                        inventory={inventory}
-                        onDelete={() => setOpenDeleteInventoryDialog(true)}
-                    />
+                    <div className="w-1/3">
+                        <InventoryDetailCard
+                            inventory={inventory}
+                            onDelete={() => setOpenDeleteInventoryDialog(true)}
+                        />
+                    </div>
                     <Table
                         toolbar={
                             <div className="flex gap-2 w-full justify-between">
@@ -120,8 +97,8 @@ export default function IventoryDetailPage({ inventaris }) {
                                         emptyMessage={'Status tidak ada'}
                                         placeholder={'Cari status...'}
                                         data={statuses}
-                                        value={selectedStatus}
-                                        onChange={setSelectedStatus}
+                                        value={filters.status}
+                                        onChange={handleStatusChange}
                                         width='w-[150px]'
                                     />
                                     <Combobox
@@ -129,15 +106,19 @@ export default function IventoryDetailPage({ inventaris }) {
                                         emptyMessage={'Kondisi tidak ada'}
                                         placeholder={'Cari kondisi...'}
                                         data={conditions}
-                                        value={selectedCondition}
-                                        onChange={setSelectedCondition}
+                                        value={filters.condition}
+                                        onChange={handleConditionChange}
                                         width='w-[150px]'
                                     />
                                     <Input placeholder="Cari unit..." />
                                 </div>
-                                <CreateInventoryUnitRightSheet
+                                <CreateUnitRightSheet
+                                    inventory_id={inventory?.id}
+                                    conditions={condition_options?.data}
+                                    open={openCreateUnitSheet}
+                                    onOpenChange={setOpenCreateUnitSheet}
                                     trigger={(
-                                        <Button variant="accentTwo">
+                                        <Button variant="accentTwo" onClick={() => setOpenCreateUnitSheet(true)}>
                                             Tambah Unit
                                         </Button>
                                     )}
@@ -155,58 +136,86 @@ export default function IventoryDetailPage({ inventaris }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {units.map((unit) => (
-                                <tr key={unit.id} className="border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors">
-                                    <td className="px-6 py-4">{`#${unit.code}`}</td>
-                                    <td className="px-6 py-4">{unit.label}</td>
-                                    <td className="px-6 py-4">{unit.condition}</td>
-                                    <td className="px-6 py-4">{unit.status}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <UpdateInventoryUnitRightSheet
-                                                updatedUnit={unit}
-                                                trigger={(
+                            {units?.length > 0
+                                ? (
+                                    units?.map((unit) => (
+                                        <tr key={unit?.id} className="border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors">
+                                            <td className="px-6 py-4">{`#${unit?.code}`}</td>
+                                            <td className="px-6 py-4">{unit?.label === "" || unit?.label === null ? 'Tidak berlabel' : unit?.label}</td>
+                                            <td className="px-6 py-4">{unit?.condition?.name?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</td>
+                                            <td className="px-6 py-4"> {unit?.status?.charAt(0).toUpperCase() + unit?.status?.slice(1)}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end gap-2">
+
                                                     <Button
                                                         size="sm"
                                                         variant="accentOne"
+                                                        onClick={() => {
+                                                            setSelectedUnit(unit)
+                                                            setOpenUpdateUnitSheet(true)
+                                                        }}
                                                     >
                                                         <Edit />
                                                     </Button>
-                                                )}
-                                            />
-                                            <Button
-                                                size="sm"
-                                                variant="destructive"
-                                                onClick={() => {
-                                                    setSelectedUnit(unit)
-                                                    setOpenDeleteUnitDialog(true)
-                                                }}
-                                            >
-                                                <Trash2 />
-                                            </Button>
-                                            <CreateTransactionRightSheet
-                                                selectedUnit={unit}
-                                                trigger={(
-                                                    <Button size="sm" variant="primary">
-                                                        Pinjamkan
+
+                                                    <Button
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        onClick={() => {
+                                                            setSelectedUnit(unit)
+                                                            setOpenDeleteUnitDialog(true)
+                                                        }}
+                                                    >
+                                                        <Trash2 />
                                                     </Button>
-                                                )}
-                                            />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                    <CreateTransactionRightSheet
+                                                        selectedUnit={unit}
+                                                        trigger={(
+                                                            <Button size="sm" variant="primary">
+                                                                Pinjamkan
+                                                            </Button>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )))
+                                : (
+                                    <tr>
+                                        <td colSpan={5} className="text-center py-6 text-slate-400">
+                                            Tidak ada data ditemukan.
+                                        </td>
+                                    </tr>
+                                )
+                            }
                         </tbody>
                     </Table>
                     <DeleteUnitAlertDialog
                         open={openDeleteUnitDialog}
                         onOpenChange={setOpenDeleteUnitDialog}
                         deletedUnit={selectedUnit}
+                        onSucces={() => setOpenDeleteUnitDialog(false)}
                     />
                     <DeleteInventoryAlertDialog
                         open={openDeleteInventoryDialog}
                         onOpenChange={setOpenDeleteInventoryDialog}
                         deletedInventory={inventory}
+                    />
+                    <UpdateUnitRightSheet
+                        updatedUnit={selectedUnit}
+                        conditions={condition_options?.data}
+                        open={openUpdateUnitSheet}
+                        onOpenChange={setOpenUpdateUnitSheet}
+                        trigger={(
+                            <Button
+                                size="sm"
+                                variant="accentOne"
+                                className={'hidden'}
+                                onClick={() => setOpenUpdateUnitSheet(true)}
+                            >
+                                <Edit />
+                            </Button>
+                        )}
                     />
                 </div>
             </DashboardLayout>
@@ -220,7 +229,7 @@ function InventoryDetailCard({
 }) {
     return (
         /* sof-Container */
-        <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300 cursor-pointer">
+        <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300">
 
             {/* sof-Image-Container */}
             <div className="relative">
@@ -238,7 +247,7 @@ function InventoryDetailCard({
             {/* sof-Information-Container */}
             <div className="flex flex-col gap-4 p-6 border-t border-slate-300">
                 <Badge className="py-2 px-4 text-base text-slate-500 bg-slate-200">
-                    {inventory?.category}
+                    {inventory?.category?.name}
                 </Badge>
                 <h4 className="text-3xl font-medium text-slate-800">{inventory?.name}</h4>
                 <div >
@@ -252,15 +261,15 @@ function InventoryDetailCard({
             {/* sof-Summary-Container */}
             <div className="grid grid-cols-3 text-center text-sm border-t border-slate-300">
                 <div className="py-6 text-itxAccentTwo-500">
-                    <p className="font-medium text-lg">{inventory?.count_tersedia}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_tersedia}</p>
                     <p className="font-base">Tersedia</p>
                 </div>
                 <div className="py-6 text-itxAccentOne-500">
-                    <p className="font-medium text-lg">{inventory?.count_dipinjam}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_terpinjam}</p>
                     <p className="font-base">Dipinjam</p>
                 </div>
                 <div className="py-6 text-itxPrimary-500">
-                    <p className="font-medium text-lg">{inventory?.count_tiada}</p>
+                    <p className="font-medium text-lg">{inventory?.summary?.count_tiada}</p>
                     <p className="font-base">Tiada</p>
                 </div>
             </div>
@@ -310,8 +319,17 @@ function DeleteInventoryAlertDialog({
 function DeleteUnitAlertDialog({
     open,
     onOpenChange,
-    deletedUnit
+    deletedUnit,
+    onSucces,
 }) {
+    const handleDelete = () => {
+        router.delete(`/inventaris/destroyUnit/${deletedUnit?.id}`, {
+            onSuccess: onSucces,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[425px]">
@@ -327,18 +345,22 @@ function DeleteUnitAlertDialog({
                     <DialogClose asChild>
                         <Button variant={'secondary'} >Batal</Button>
                     </DialogClose>
-                    <Button variant={'destructive'}>Hapus</Button>
+                    <Button variant={'destructive'} onClick={handleDelete}>Hapus</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     )
 }
 
-function CreateInventoryUnitRightSheet({
-    trigger
+function CreateUnitRightSheet({
+    trigger,
+    inventory_id,
+    conditions,
+    open,
+    onOpenChange,
 }) {
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 {trigger}
             </SheetTrigger>
@@ -349,18 +371,25 @@ function CreateInventoryUnitRightSheet({
                         Isi form dibawah ini untuk menambahkan data unit
                     </SheetDescription>
                 </SheetHeader>
-                <CreateInventoryUnitForm />
+                <CreateInventoryUnitForm
+                    inventaris_id={inventory_id}
+                    conditions={conditions}
+                    onClose={onOpenChange}
+                />
             </SheetContent>
         </Sheet>
     )
 }
 
-function UpdateInventoryUnitRightSheet({
+function UpdateUnitRightSheet({
     trigger,
-    updatedUnit
+    updatedUnit,
+    conditions,
+    open,
+    onOpenChange
 }) {
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 {trigger}
             </SheetTrigger>
@@ -371,7 +400,11 @@ function UpdateInventoryUnitRightSheet({
                         Isi form dibawah ini untuk memperbarui data unit
                     </SheetDescription>
                 </SheetHeader>
-                <UpdateInventoryUnitForm updatedUnit={updatedUnit} />
+                <UpdateInventoryUnitForm
+                    updatedUnit={updatedUnit}
+                    conditions={conditions}
+                    onClose={onOpenChange}
+                />
             </SheetContent>
         </Sheet>
     )
