@@ -71,6 +71,8 @@ function Sidebar({ collapsed, onCollapsed }) {
 }
 
 export default function DashboardLayout({ title, description, children }) {
+    const { props } = usePage()
+    const auth = props.auth
     const [collapsed, setCollapsed] = React.useState(() => {
         const saved = localStorage.getItem('sidebar-collapsed')
         return saved === 'true'
@@ -103,8 +105,8 @@ export default function DashboardLayout({ title, description, children }) {
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col gap-2">
-                                <p className="text-slate-500">Achmed Hibatillah</p>
-                                <Badge className={'bg-violet-200 text-violet-500 font-medium'}>Admin</Badge>
+                                <p className="text-slate-500">{auth?.user_fullname}</p>
+                                <Badge className={'bg-violet-200 text-violet-500 font-medium'}>{auth?.user_role}</Badge>
                             </div>
                         </div>
                     </div>
