@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import Table from "@/components/ui/table";
@@ -6,12 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import Combobox from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import CreateUserForm from "./CreateUserForm";
+import { toast } from "sonner";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import UpdateUserForm from "./UpdateUserForm";
 
 export default function UserPage({ users: listUsers, role_options }) {
+    const { props } = usePage()
+    const flash = props.flash
+
     const users = listUsers?.data
     const roles = role_options?.map(i => ({ value: i?.name, label: i?.name }))
 
     const [selectedRole, setSelectedRole] = React.useState('')
+    const [selectedUser, setSelectedUser] = React.useState(null)
+    const [openCreateUserSheet, setOpenCreateUserSheet] = React.useState(false)
+    const [openUpdateUserSheet, setOpenUpdateUserSheet] = React.useState(false)
+    const [openDeleteUserDialog, setOpenDeleteUserDialog] = React.useState(false)
 
     const handleRoleChange = (val) => {
         setSelectedRole(val)
@@ -35,6 +47,15 @@ export default function UserPage({ users: listUsers, role_options }) {
         return formatted
     }
 
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success)
+        }
+        if (flash?.error) {
+            toast.error(flash.error)
+        }
+    }, [flash])
+
     return (
         <>
             <Head title='Inventix - User' />
@@ -57,9 +78,18 @@ export default function UserPage({ users: listUsers, role_options }) {
                                     />
                                     <Input placeholder="Cari user..." />
                                 </div>
-                                <Button variant="accentTwo">
-                                    Tambah User
-                                </Button>
+                                <CreateUserRightSheet
+                                    open={openCreateUserSheet}
+                                    onOpenChange={setOpenCreateUserSheet}
+                                    trigger={(
+                                        <Button
+                                            variant="accentTwo"
+                                            onClick={() => setOpenCreateUserSheet(true)}
+                                        >
+                                            Tambah User
+                                        </Button>
+                                    )}
+                                />
                             </div>
                         }
                     >
@@ -78,11 +108,17 @@ export default function UserPage({ users: listUsers, role_options }) {
                                 ? (
                                     users?.map((user) => (
                                         <tr
-                                            onClick={() => router.visit(`/users/${user?.id}`)}
                                             key={user?.id}
                                             className="cursor-pointer border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors"
                                         >
-                                            <td className="px-6 py-4">{user?.email}</td>
+                                            <td className="px-6 py-4 font-normal">
+                                                <Button
+                                                    variant={'link'}
+                                                    onClick={() => router.visit(`/users/${user.id}`)}
+                                                >
+                                                    {user?.email}
+                                                </Button>
+                                            </td>
                                             <td className="px-6 py-4">{user?.fullname}</td>
                                             <td className="px-6 py-4">{user?.role}</td>
                                             <td className="px-6 py-4">{formatDate(user?.created_at)}</td>
@@ -92,12 +128,20 @@ export default function UserPage({ users: listUsers, role_options }) {
                                                     <Button
                                                         size="sm"
                                                         variant="accentOne"
+                                                        onClick={() => {
+                                                            setSelectedUser(user)
+                                                            setOpenUpdateUserSheet(true)
+                                                        }}
                                                     >
                                                         <Edit />
                                                     </Button>
                                                     <Button
                                                         size="sm"
                                                         variant="destructive"
+                                                        onClick={() => {
+                                                            setSelectedUser(user)
+                                                            setOpenDeleteUserDialog(true)
+                                                        }}
                                                     >
                                                         <Trash2 />
                                                     </Button>
@@ -116,8 +160,131 @@ export default function UserPage({ users: listUsers, role_options }) {
                             }
                         </tbody>
                     </Table>
+                    <CreateUserRightSheet
+                        open={openCreateUserSheet}
+                        onOpenChange={setOpenCreateUserSheet}
+                        trigger={(
+                            <Button
+                                size="sm"
+                                variant="accentOne"
+                                className={'hidden'}
+                                onClick={() => setOpenCreateUserSheet(true)}
+                            >
+                                Tambah User
+                            </Button>
+                        )}
+                    />
+                    <UpdateUserRightSheet
+                        open={openUpdateUserSheet}
+                        onOpenChange={setOpenUpdateUserSheet}
+                        updatedUser={selectedUser}
+                        trigger={(
+                            <Button
+                                size="sm"
+                                variant="accentOne"
+                                className={'hidden'}
+                                onClick={() => setOpenUpdateUserSheet(true)}
+                            >
+                                Edit User
+                            </Button>
+                        )}
+                    />
+                    <DeleteUserAlertDialog
+                        open={openDeleteUserDialog}
+                        onOpenChange={setOpenDeleteUserDialog}
+                        deletedUser={selectedUser}
+                        onSucces={() => setOpenDeleteUserDialog(false)}
+                    />
                 </div>
             </DashboardLayout>
         </>
+    )
+}
+
+function CreateUserRightSheet({
+    trigger,
+    open,
+    onOpenChange,
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetTrigger asChild>
+                {trigger}
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Tambah User</SheetTitle>
+                    <SheetDescription>
+                        Isi form dibawah ini untuk menambahkan data user
+                    </SheetDescription>
+                </SheetHeader>
+                <CreateUserForm
+                    onClose={onOpenChange}
+                />
+            </SheetContent>
+        </Sheet>
+    )
+}
+
+function UpdateUserRightSheet({
+    trigger,
+    open,
+    onOpenChange,
+    updatedUser
+}) {
+    return (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            <SheetTrigger asChild>
+                {trigger}
+            </SheetTrigger>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>Edit User</SheetTitle>
+                    <SheetDescription>
+                        Isi form dibawah ini untuk memperbarui data user
+                    </SheetDescription>
+                </SheetHeader>
+                <UpdateUserForm
+                    updatedUser={updatedUser}
+                    onClose={onOpenChange}
+                />
+            </SheetContent>
+        </Sheet>
+    )
+}
+
+function DeleteUserAlertDialog({
+    open,
+    onOpenChange,
+    deletedUser,
+    onSucces
+}) {
+    const handleDelete = () => {
+        router.delete(`/users/${deletedUser?.id}`, {
+            onSuccess: onSucces,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>
+                        Hapus User
+                    </DialogTitle>
+                    <DialogDescription>
+                        {`Apakah anda yakin ingin menghapus user ${deletedUser?.fullname}?`}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant={'secondary'} >Batal</Button>
+                    </DialogClose>
+                    <Button variant={'destructive'} onClick={handleDelete}>Hapus</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }

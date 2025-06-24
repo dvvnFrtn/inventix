@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import Table from "@/components/ui/table";
@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function TransactionPage({ transactions: rawTransactions }) {
+    const { props } = usePage()
+
     const transactions = rawTransactions?.data
 
     const formatDate = (rawDate) => {
@@ -33,7 +35,11 @@ export default function TransactionPage({ transactions: rawTransactions }) {
                             <th className="px-6 py-4 font-medium">Tgl Pinjam</th>
                             <th className="px-6 py-4 font-medium">Tgl Kembali</th>
                             <th className="px-6 py-4 font-medium">Status</th>
-                            <th className="px-6 py-4 text-right font-medium">Aksi</th>
+                            {
+                                props.auth?.user_role !== 'guru' &&
+                                <th className="px-6 py-4 text-right font-medium">Aksi</th>
+                            }
+
                         </tr>
                     </thead>
                     <tbody>
@@ -50,15 +56,18 @@ export default function TransactionPage({ transactions: rawTransactions }) {
                                             {tx?.late_message && (<p className="text-rose-400 text-sm">{tx?.late_message}</p>)}
                                         </td>
                                         <td className="px-6 py-4">{tx?.status === 0 ? 'Sedang' : 'Selesai'}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            {tx?.status === 0 && (
-                                                <Button
-                                                    size={'sm'}
-                                                >
-                                                    Kembalikan
-                                                </Button>
-                                            )}
-                                        </td>
+                                        {
+                                            props.auth?.user_role !== 'guru' &&
+                                            <td className="px-6 py-4 text-right">
+                                                {tx?.status === 0 && (
+                                                    <Button
+                                                        size={'sm'}
+                                                    >
+                                                        Kembalikan
+                                                    </Button>
+                                                )}
+                                            </td>
+                                        }
                                     </tr>
                                 )))
                             : (

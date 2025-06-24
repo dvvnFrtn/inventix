@@ -14,8 +14,17 @@ const menuItems = [
     { icon: <Archive size={24} />, label: 'Inventaris', href: '/inventaris' },
 ]
 
+const menuItemsGuru = [
+    { icon: <Home size={24} />, label: 'Dashboard', href: '/dashboard' },
+    { icon: <BookOpen size={24} />, label: 'Peminjaman', href: '/transactions' },
+    { icon: <Archive size={24} />, label: 'Inventaris', href: '/inventaris' },
+]
+
 function Sidebar({ collapsed, onCollapsed }) {
-    const { url } = usePage()
+    const { url, props } = usePage()
+
+    const menu = props.auth?.user_role !== 'guru' ? menuItems : menuItemsGuru
+
     return (
         <div
             className={`${collapsed ? 'w-fit' : 'w-64'
@@ -36,7 +45,7 @@ function Sidebar({ collapsed, onCollapsed }) {
                 <div className="border-t border-slate-500 mb-12" />
 
                 <nav className="flex flex-col gap-4">
-                    {menuItems.map((item, index) => {
+                    {menu.map((item, index) => {
                         const isActive = url.startsWith(item.href)
                         return (
                             <Link

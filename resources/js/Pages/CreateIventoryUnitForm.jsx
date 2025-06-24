@@ -89,7 +89,7 @@ export default function CreateInventoryUnitForm({ inventaris_id, conditions, onC
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Pilih Status..." />
+                                        <SelectValue placeholder="Pilih status..." />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>

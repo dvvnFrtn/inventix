@@ -9,76 +9,93 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const FormSchema = z.object({
-    name: z.string().nonempty({
-        message: 'Nama barang wajib diisi'
+    email: z.string().nonempty({
+        message: 'Email wajib diisi'
     }),
-    description: z.string().nullable(),
-    category_id: z.string().nonempty({
-        message: 'Kategori wajib dipilih'
-    })
+    pass: z.string().nonempty({
+        message: 'Password wajib diisi'
+    }),
+    name: z.string().nonempty({
+        message: 'Nama lengkap wajib diisi'
+    }),
+    role: z.enum(['admin', 'petugas', 'guru'])
 })
 
-export default function CreateInventoryForm({
-    categories,
-    onClose
-}) {
+export default function CreateUserForm({ onClose }) {
     const form = useForm({
         resolver: zodResolver(FormSchema),
         defaultValues: {
+            email: '',
+            pass: '',
             name: '',
-            description: '',
-            category_id: ''
-        },
+            role: 'guru'
+        }
     })
 
     const onSubmit = (data) => {
-        router.post(`/inventaris`, {
-            inventaris_name: data.name,
-            inventaris_desc: data.description,
-            category_id: data.category_id,
+        router.post('/users', {
+            user_email: data.email,
+            user_pass: data.pass,
+            user_fullname: data.name,
+            user_role: data.role
         }, {
             onSuccess: () => {
                 onClose?.()
-            },
-            onError: (e) => console.log(e)
+            }
         })
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
-                    name="name"
+                    name='name'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Nama Barang</FormLabel>
+                            <FormLabel>Nama Lengkap</FormLabel>
                             <FormControl>
-                                <Input placeholder='Masukkan nama barang' {...field} />
+                                <Input  {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
-                    name="description"
+                    name='email'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Deskripsi</FormLabel>
+                            <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input placeholder='Masukkan deskripsi opsional' {...field} />
+                                <Input  {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
-                    name="category_id"
+                    name='pass'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Kategori</FormLabel>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <Input  {...field} type={'password'} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Role</FormLabel>
                             <Select
                                 onValueChange={field.onChange}
                                 value={field.value ? String(field.value) : undefined}
@@ -86,22 +103,28 @@ export default function CreateInventoryForm({
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Pilih category..." />
+                                        <SelectValue placeholder="Pilih role..." />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {categories?.map((c) => (
-                                        <SelectItem key={c.id} value={String(c.id)}>
-                                            {c?.name}
-                                        </SelectItem>
-                                    ))}
+                                    <SelectItem key={1} value={'guru'}>
+                                        Guru
+                                    </SelectItem>
+                                    <SelectItem key={2} value={'petugas'}>
+                                        Petugas
+                                    </SelectItem>
+                                    <SelectItem key={3} value={'admin'}>
+                                        Admin
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button variant={'accentOne'} type={'submit'}>Simpan</Button>
+                <Button type="submit" variant={'accentOne'} className={'w-full mt-6'}>
+                    Simpan
+                </Button>
             </form>
         </Form>
     )
