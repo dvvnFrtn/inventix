@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Inventarisd extends Model
 {
+    use HasFactory;
     protected $table = 'inventarisd';
     protected $primaryKey = 'inventarisd_id';
     public $incrementing = false;
@@ -19,6 +22,15 @@ class Inventarisd extends Model
         'inventaris_id',
         'kondisi_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->inventarisd_id = (string) Str::uuid();
+        });
+    }
 
     public function inventaris()
     {

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Transaction extends Model
 {
+    use HasFactory;
     protected $table = 'transaction';
     protected $primaryKey = 'transaction_id';
     public $incrementing = false;
@@ -21,6 +24,15 @@ class Transaction extends Model
         'user_id',
         'inventarisd_id',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->transaction_id = (string) Str::uuid();
+        });
+    }
 
     public function user()
     {
@@ -37,21 +49,21 @@ class Transaction extends Model
         $query = self::where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->with(['user', 'inventarisd.inventaris.category']);
-    
+
         // Sub-menu filter
         if ($status === 'sedang') {
             // Barang belum melewati batas waktu
             $query->where('transaction_status', 0)
-                  ->where('transaction_end', '>=', Carbon::now());
+                ->where('transaction_end', '>=', Carbon::now());
         } elseif ($status === 'terlambat') {
             // Barang melewati batas waktu
             $query->where('transaction_status', 0)
-                  ->where('transaction_end', '<', Carbon::now());
+                ->where('transaction_end', '<', Carbon::now());
         } elseif ($status === 'selesai') {
             // Barang sudah dikembalikan
             $query->where('transaction_status', 1);
         }
-    
+
         return $query->get()->map(function ($item) {
             return [
                 'code' => $item->transaction_code,
@@ -71,16 +83,44 @@ class Transaction extends Model
             ];
         });
     }
-    
+
 
     private static function checkDue($transaction_end)
     {
         $now = Carbon::now();
         $end = Carbon::parse($transaction_end);
-    
+
         return [
             'status' => $now->greaterThan($end),
             'range' => $now->diffInMinutes($end)
         ];
-    }    
+    }
+
+
+    public function getLateMessageAttribute(): ?string
+    {
+        $now = Carbon::now();
+        $end = Carbon::parse($this->transaction_end);
+
+        $diffInSeconds = $now->diffInSeconds($end, false);
+
+        if ($diffInSeconds >= 0) {
+            return null;
+        }
+
+        $abs = abs($diffInSeconds);
+        $days = floor($abs / 86400);
+        $hours = floor(($abs % 86400) / 3600);
+        $minutes = floor(($abs % 3600) / 60);
+
+        $timeString = '';
+        if ($days > 0)
+            $timeString .= "$days hari ";
+        if ($hours > 0)
+            $timeString .= "$hours jam ";
+        if ($minutes > 0 || $timeString === '')
+            $timeString .= "$minutes menit";
+
+        return "Terlambat $timeString";
+    }
 }

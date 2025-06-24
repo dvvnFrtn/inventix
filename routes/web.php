@@ -5,6 +5,9 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientGuruController;
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientPetugasController;
+use App\Http\Controllers\Inventix\InventarisController;
+use App\Http\Controllers\Inventix\TransactionController;
+use App\Http\Controllers\Inventix\UserController;
 use App\Http\Controllers\ServerAuthController;
 use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
@@ -12,19 +15,43 @@ use App\Http\Middleware\AuthPetugasMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::prefix('inventaris')->group(function () {
+    Route::get('/', [InventarisController::class, 'index']);
+    Route::get('/{code}', [InventarisController::class, 'show']);
+    Route::post('/storeUnit', [InventarisController::class, 'storeUnit']);
+    Route::delete('/destroyUnit/{id}', [InventarisController::class, 'destroyUnit']);
+    Route::put('/updateUnit/{id}', [InventarisController::class, 'updateUnit']);
+});
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::get('/{id}', [UserController::class, 'show']);
+});
+
+Route::prefix('transactions')->group(function () {
+    Route::get('/', [TransactionController::class, 'index']);
+});
+
 Route::get('/auth', function () {
     return Inertia::render('Auth/AuthPage');
 });
 
+// ADMIN - DASHBOARD 
 Route::get('/admin/dashboard', function () {
     return Inertia::render('Admin/DashboardPage');
 });
+
+// ADMIN - PEMINJAMAN
 Route::get('/admin/transactions', function () {
     return Inertia::render('Admin/TransactionPage');
 });
 
+// ADMIN - PEMGELOLAAN INVENTARIS
 Route::get('/admin/inventories', function () {
     return Inertia::render('Admin/InventoryPage');
+});
+Route::get('/admin/inventories/001', function () {
+    return Inertia::render('Admin/InventoryDetailPage');
 });
 
 Route::get('/', [ClientHomeController::class, 'index']);

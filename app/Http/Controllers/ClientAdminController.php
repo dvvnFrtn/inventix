@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ClientAdminController extends Controller
@@ -23,15 +24,19 @@ class ClientAdminController extends Controller
 
     public function index()
     {
-        return 
-        view('templates.header') . 
-        view('templates.startbar', [
-            'name' => 'Dashboard',
-            'page' => 'dashboard',
-            'menu' => $this->menu
-        ]) . 
-        view('admin.index') . 
-        view('templates.endbar') . 
-        view('templates.footer');
+        return
+            view('templates.header') .
+            view('templates.startbar', [
+                'name' => 'Dashboard',
+                'page' => 'dashboard',
+                'menu' => $this->menu
+            ]) .
+            view('admin.index') .
+            view('templates.endbar') .
+            view('templates.footer');
+    }
+
+    public function inventoriesDetail()
+    {
     }
 }

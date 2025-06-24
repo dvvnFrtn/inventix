@@ -6,15 +6,14 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('category', function (Blueprint $table) {
-            $table->string('category_id', 20)->primary();
+            $table->uuid('category_id')->primary();
             $table->integer('category_code')->unique(); // 3 digit
             $table->string('category_name', 255);
             $table->string('category_desc', 500)->nullable();
@@ -22,7 +21,7 @@ return new class extends Migration
         });
 
         DB::table('category')->insert([
-            'category_id' => '24fcfd4b1b7530e3853c',            
+            'category_id' => Str::uuid(),
             'category_code' => 111,
             'category_name' => 'Tidak ada',
             'category_desc' => 'Inventaris-inventaris yang tidak berkategori.',
@@ -31,8 +30,8 @@ return new class extends Migration
         ]);
 
         DB::table('category')->insert([
-            'category_id' => 'fe8e280726d3139f7541',
-            'category_code' => 319,
+            'category_id' => Str::uuid(),
+            'category_code' => 112,
             'category_name' => 'Kebersihan',
             'category_desc' => 'Inventaris yang menunjang kebersihan.',
             'created_at' => now(),
@@ -40,8 +39,8 @@ return new class extends Migration
         ]);
 
         DB::table('category')->insert([
-            'category_id' => 'u3718383fe1dddec7e32',            
-            'category_code' => 649,
+            'category_id' => Str::uuid(),
+            'category_code' => 113,
             'category_name' => 'Kelas',
             'category_desc' => 'Inventaris yang menunjang kegiatan belajar-mengajar.',
             'created_at' => now(),

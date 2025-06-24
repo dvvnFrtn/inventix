@@ -6,15 +6,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('user_id', 20)->primary();
+            $table->uuid('user_id')->primary();
             $table->string('user_email', 255);
             $table->string('user_pass', 255);
             $table->string('user_fullname', 255);
@@ -24,7 +23,7 @@ return new class extends Migration
 
         DB::table('users')->insert([
             [
-                'user_id' => '88bfda0a0a98a4639ed3',
+                'user_id' => Str::uuid(),
                 'user_email' => 'admin@inventix.com',
                 'user_pass' => Hash::make('password'),
                 'user_fullname' => 'Admin',
