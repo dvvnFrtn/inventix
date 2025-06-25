@@ -15,7 +15,8 @@ const FormSchema = z.object({
     description: z.string().nullable(),
     category_id: z.string().nonempty({
         message: 'Kategori wajib dipilih'
-    })
+    }),
+    image: z.any().nullable()
 })
 
 export default function UpdateInventoryForm({
@@ -23,31 +24,74 @@ export default function UpdateInventoryForm({
     categories,
     onClose
 }) {
+    const [previewUrl, setPreviewUrl] = React.useState(null)
+
     const form = useForm({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             name: updatedInventory?.name ?? '',
             description: updatedInventory?.desc ?? '',
-            category_id: updatedInventory?.category?.id
+            category_id: updatedInventory?.category?.id,
         },
     })
 
     const onSubmit = (data) => {
-        router.put(`/inventaris/${updatedInventory?.id}`, {
+        router.post(`/inventaris/${updatedInventory?.id}`, {
+            _method: 'put',
             inventaris_name: data.name,
             inventaris_desc: data.description,
             category_id: data.category_id,
+            image: data.image
         }, {
             onSuccess: () => {
                 onClose?.()
             },
-            onError: (e) => console.log(e)
+            onError: (e) => console.log(e),
         })
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-full space-y-6">
+                {previewUrl && (
+                    <div className="w-full flex justify-center">
+                        <img
+                            src={previewUrl}
+                            alt="Preview"
+                            className="max-h-60 w-full object-cover rounded-xl border"
+                        />
+                    </div>
+                )}
+
+                <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Gambar</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        field.onChange(file)
+                                        if (file) {
+                                            const reader = new FileReader()
+                                            reader.onloadend = () => {
+                                                setPreviewUrl(reader.result)
+                                            }
+                                            reader.readAsDataURL(file)
+                                        } else {
+                                            setPreviewUrl(null)
+                                        }
+                                    }}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="name"

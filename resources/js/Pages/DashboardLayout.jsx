@@ -55,7 +55,7 @@ function Sidebar({ collapsed, onCollapsed }) {
                     {menu.map((item, index) => {
                         const isInventaris = item.href === '/inventaris';
                         const isActive = isInventaris
-                            ? url === '/inventaris' || url.startsWith('/categories')
+                            ? url.startsWith('/inventaris') || url.startsWith('/categories')
                             : url.startsWith(item.href);
                         return (
                             <Link
