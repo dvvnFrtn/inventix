@@ -44,6 +44,60 @@ class Transaction extends Model
         return $this->belongsTo(Inventarisd::class, 'inventarisd_id', 'inventarisd_id');
     }
 
+    public static function getAllRiwayatByMonth($month)
+    {
+        $startOfMonth = Carbon::parse($month . '-01')->startOfMonth();
+        $endOfMonth = Carbon::parse($month . '-01')->endOfMonth();
+    
+        $query = self::where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('transaction_start', [$startOfMonth, $endOfMonth])
+                  ->orWhereBetween('transaction_end', [$startOfMonth, $endOfMonth]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->with(['user', 'inventarisd.inventaris.category']);
+    
+        $rawData = $query->get();
+    
+        $data = $rawData->map(function ($item) {
+            return [
+                'inventaris_code' => optional($item->inventarisd->inventaris->category)->category_code
+                    . '-' . optional($item->inventarisd->inventaris)->inventaris_code
+                    . '-' . optional($item->inventarisd)->inventarisd_code,
+                'kategori' => optional($item->inventarisd->inventaris->category)->category_name,
+                'barang' => optional($item->inventarisd->inventaris)->inventaris_name,
+                'label' => optional($item->inventarisd)->inventarisd_label !== null || optional($item->inventarisd)->inventarisd_label !== '' ? optional($item->inventarisd)->inventarisd_label : 'Tidak berlabel',
+                'peminjam_fullname' => optional($item->user)->user_fullname,
+                'peminjam_email' => optional($item->user)->user_email,
+                'mulai' => $item->transaction_start,
+                'berakhir' => $item->transaction_end,
+                'kembali' => $item->transaction_status == 0 ? '-' : $item->updated_at->format('Y-m-d'),
+                'status' => $item->transaction_status == 0
+                    ? 'Belum Kembali'
+                    : ($item->updated_at->lessThanOrEqualTo($item->transaction_end)
+                        ? 'Kembali'
+                        : 'Kembali (telat)'),
+            ];
+        });
+    
+        return [
+            'total' => [
+                'all' => $rawData->count(),
+                'kembali' => $rawData->filter(function ($item) {
+                    return $item->transaction_status != 0 &&
+                        $item->updated_at->lessThanOrEqualTo($item->transaction_end);
+                })->count(),
+                'kembali_telat' => $rawData->filter(function ($item) {
+                    return $item->transaction_status != 0 &&
+                        $item->updated_at->greaterThan($item->transaction_end);
+                })->count(),
+                'belum_kembali' => $rawData->filter(function ($item) {
+                    return $item->transaction_status == 0;
+                })->count(),
+            ],
+            'data' => $data,
+        ];
+    }    
+
     public static function getAllRiwayatByUser($user_id, $status = null)
     {
         $query = self::where('user_id', $user_id)

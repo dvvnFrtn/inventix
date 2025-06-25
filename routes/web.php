@@ -9,6 +9,7 @@ use App\Http\Controllers\Inventix\CategoryController;
 use App\Http\Controllers\Inventix\InventarisController;
 use App\Http\Controllers\Inventix\TransactionController;
 use App\Http\Controllers\Inventix\UserController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ServerAuthController;
 use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
@@ -69,3 +70,5 @@ Route::get('d', function () {
     session()->flush();
     return redirect()->back();
 });
+
+Route::get('download-laporan', [LaporanController::class, 'download']);
