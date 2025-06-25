@@ -127,11 +127,11 @@ class TransactionController extends Controller
             'transaction_status' => 1,
         ]);
 
-        Inventarisd::where('inventarisd_code', $tx->inventarisd()->inventarisd_code)    
+        Inventarisd::where('inventarisd_id', $tx->inventarisd->inventarisd_id)
             ->update(
                 [
-                    'inventarisd_status' => 'tersedia'
-                ]
+                    'inventarisd_status' => 'tersedia',
+                ],
             );
 
         return redirect()->back()->with('success', 'Transaksi peminjaman berhasil dikembalikan.');

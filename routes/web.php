@@ -20,7 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::prefix('inventaris')->group(function () {
+Route::prefix('inventaris')->middleware([AuthMiddleware::class])->group(function () {
     Route::get('/', [InventarisController::class, 'index']);
     Route::post('/', [InventarisController::class, 'store']);
     Route::get('/{code}', [InventarisController::class, 'show']);
