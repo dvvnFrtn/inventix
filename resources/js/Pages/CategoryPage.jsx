@@ -32,7 +32,7 @@ export default function CategoryPage({ categories: raw }) {
                         <div className="flex flex-col gap-6 mt-12">
                             {
                                 categories?.map((c) => (
-                                    <CategoryCard category={c} onUpdate={() => {
+                                    <CategoryCard key={c?.id} category={c} onUpdate={() => {
                                         setSelectedCategory(c)
                                         setIsEditing(true)
                                     }} onDelete={() => {

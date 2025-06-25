@@ -147,20 +147,53 @@ class InventarisController extends Controller
             'inventaris_name' => 'nullable|string|max:255',
             'inventaris_desc' => 'nullable|string|max:500',
             'category_id' => 'required|string|exists:category,category_id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        Inventaris::where('inventaris_id', $id)->update([
+        $inventaris = Inventaris::where('inventaris_id', $id)->first();
+
+        $dataToUpdate = [
             'inventaris_name' => $validated['inventaris_name'],
             'inventaris_desc' => $validated['inventaris_desc'],
             'category_id' => $validated['category_id'],
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '-' . $inventaris->inventaris_code . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('inventaris', $filename, 'public');
+
+            if ($path) {
+                if ($inventaris->image_url) {
+                    $oldPath = str_replace('/storage/', '', $inventaris->image_url);
+
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+
+                $dataToUpdate['image_url'] = Storage::url($path);
+            }
+        }
+
+        $inventaris->update($dataToUpdate);
 
         return redirect()->back()->with('success', 'Barang berhasil diperbarui.');
     }
 
+
     public function destroy($id)
     {
         $inventory = Inventaris::findOrFail($id);
+
+        if ($inventory->image_url) {
+            $relativePath = str_replace('/storage/', '', $inventory->image_url);
+
+            if (Storage::disk('public')->exists($relativePath)) {
+                Storage::disk('public')->delete($relativePath);
+            }
+        }
+
         $inventory->delete();
 
         return redirect('/inventaris')->with('success', 'Barang berhasil dihapus.');
