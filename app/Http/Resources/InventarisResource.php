@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class InventarisResource extends JsonResource
 {
@@ -20,7 +21,7 @@ class InventarisResource extends JsonResource
             'name' => $this->inventaris_name,
             'desc' => $this->inventaris_desc,
             'category' => CategoryResource::make(
-                $this->whenLoaded(relationship: 'category')
+                $this->whenLoaded(relationship: 'category'),
             ),
             'summary' => $this->when(
                 condition: $this->count_tersedia,
@@ -28,11 +29,12 @@ class InventarisResource extends JsonResource
                     'count_tersedia' => $this->count_tersedia,
                     'count_terpinjam' => $this->count_terpinjam,
                     'count_tiada' => $this->count_tiada,
-                ]
+                ],
             ),
             'units' => InventarisDResource::collection(
-                $this->whenLoaded(relationship: 'inventarisd')
+                $this->whenLoaded(relationship: 'inventarisd'),
             ),
+            'image_url' => $this->image_url,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

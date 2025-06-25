@@ -16,10 +16,12 @@ import { toast } from "sonner";
 import UpdateInventoryForm from "./UpdateInventoryForm";
 
 export default function IventoryDetailPage({
-    inventaris, condition_options, status_options, categories_options
+    inventaris, condition_options, status_options, categories_options, user_options
 }) {
     const { props } = usePage()
     const flash = props.flash
+
+    console.log(user_options)
 
     // Filtering-State
     const [filters, setFilters] = React.useState({
@@ -34,6 +36,7 @@ export default function IventoryDetailPage({
     const [openUpdateUnitSheet, setOpenUpdateUnitSheet] = React.useState(false)
     const [openDeleteInventoryDialog, setOpenDeleteInventoryDialog] = React.useState(false)
     const [openUpdateInventorySheet, setOpenUpdateInventorySheet] = React.useState(false)
+    const [openCreateTransactionSheet, setOpenCreateTransactionSheet] = React.useState(false)
 
     // Data-State
     const inventory = inventaris?.data
@@ -176,14 +179,18 @@ export default function IventoryDetailPage({
                                                         >
                                                             <Trash2 />
                                                         </Button>
-                                                        <CreateTransactionRightSheet
-                                                            selectedUnit={unit}
-                                                            trigger={(
-                                                                <Button size="sm" variant="primary">
-                                                                    Pinjamkan
-                                                                </Button>
-                                                            )}
-                                                        />
+
+                                                        <Button
+                                                            disabled={unit?.status === 'terpinjam'}
+                                                            size="sm"
+                                                            variant="primary"
+                                                            onClick={() => {
+                                                                setSelectedUnit(unit)
+                                                                setOpenCreateTransactionSheet(true)
+                                                            }}
+                                                        >
+                                                            Pinjamkan
+                                                        </Button>
                                                     </div>
                                                 </td>
                                             }
@@ -243,6 +250,17 @@ export default function IventoryDetailPage({
                             </Button>
                         )}
                     />
+                    <CreateTransactionRightSheet
+                        selectedUnit={selectedUnit}
+                        users={user_options}
+                        open={openCreateTransactionSheet}
+                        onOpenChange={setOpenCreateTransactionSheet}
+                        trigger={(
+                            <Button size="sm" variant="primary" className={'hidden'} onClick={() => setOpenCreateTransactionSheet(true)}>
+                                Pinjamkan
+                            </Button>
+                        )}
+                    />
                 </div>
             </DashboardLayout>
         </>
@@ -262,7 +280,7 @@ function InventoryDetailCard({
             {/* sof-Image-Container */}
             <div className="relative">
                 <img
-                    src="https://down-id.img.susercontent.com/file/dc0bd15ebc2c4bd249e163c1174a233e"
+                    src={inventory?.image_url}
                     alt="Inventaris"
                     className="h-auto w-full object-cover"
                 />
@@ -460,10 +478,13 @@ function UpdateUnitRightSheet({
 
 function CreateTransactionRightSheet({
     trigger,
-    selectedUnit
+    users,
+    selectedUnit,
+    open,
+    onOpenChange
 }) {
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetTrigger asChild>
                 {trigger}
             </SheetTrigger>
@@ -471,10 +492,10 @@ function CreateTransactionRightSheet({
                 <SheetHeader>
                     <SheetTitle>Buat Peminjaman</SheetTitle>
                     <SheetDescription>
-                        Isi form dibawah ini untuk membuat data peminjaman
+                        Isi form dibawah ini untuk membuat data peminjaman pada unit {selectedUnit?.code}
                     </SheetDescription>
                 </SheetHeader>
-                <CreateTransactionForm selectedUnit={selectedUnit} />
+                <CreateTransactionForm selectedUnit={selectedUnit} users={users} onClose={onOpenChange} />
             </SheetContent>
         </Sheet>
     )

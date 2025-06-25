@@ -98,8 +98,8 @@ export default function UserPage({ users: listUsers, role_options }) {
                                 <th className="px-6 py-4 font-medium">Email</th>
                                 <th className="px-6 py-4 font-medium">Nama Lengkap</th>
                                 <th className="px-6 py-4 font-medium">Role</th>
-                                <th className="px-6 py-4 font-medium">Dibuat</th>
-                                <th className="px-6 py-4 font-medium">Diubah</th>
+                                <th className="px-6 py-4 font-medium text-center">Dibuat</th>
+                                <th className="px-6 py-4 font-medium text-center">Diubah</th>
                                 <th className="px-6 py-4 text-right font-medium">Aksi</th>
                             </tr>
                         </thead>
@@ -115,14 +115,15 @@ export default function UserPage({ users: listUsers, role_options }) {
                                                 <Button
                                                     variant={'link'}
                                                     onClick={() => router.visit(`/users/${user.id}`)}
+                                                    className={'text-itxAccentOne-500'}
                                                 >
                                                     {user?.email}
                                                 </Button>
                                             </td>
                                             <td className="px-6 py-4">{user?.fullname}</td>
                                             <td className="px-6 py-4">{user?.role}</td>
-                                            <td className="px-6 py-4">{formatDate(user?.created_at)}</td>
-                                            <td className="px-6 py-4">{formatDate(user?.updated_at)}</td>
+                                            <td className="px-6 py-4 text-center">{formatDate(user?.created_at)}</td>
+                                            <td className="px-6 py-4 text-center">{formatDate(user?.updated_at)}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end gap-2">
                                                     <Button
