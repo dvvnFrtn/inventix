@@ -23,7 +23,14 @@ const menuItemsGuru = [
 function Sidebar({ collapsed, onCollapsed }) {
     const { url, props } = usePage()
 
-    const menu = props.auth?.user_role !== 'guru' ? menuItems : menuItemsGuru
+    const menuNonGuru = menuItems.filter(item => {
+        if (props?.auth?.user_role === 'petugas' && item.href === '/transactions') {
+            return false
+        }
+        return true
+    })
+
+    const menu = props.auth?.user_role !== 'guru' ? menuNonGuru : menuItemsGuru
 
     return (
         <div
