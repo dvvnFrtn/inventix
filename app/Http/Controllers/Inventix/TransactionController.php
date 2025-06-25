@@ -14,10 +14,13 @@ use Response;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $auth = session()->get('user');
         $role = $auth['user_role'];
+
+        $filter = $request->query('status'); // 'aktif', 'terlambat', 'selesai'
+        $now = Carbon::now();
 
         $query = Transaction::with('user')
             ->with('inventarisd.inventaris');
@@ -26,21 +29,50 @@ class TransactionController extends Controller
             $query->where('user_id', $auth['user_id']);
         }
 
+        if ($filter) {
+            if ($filter === 'aktif') {
+                $query->where('transaction_status', 0)->where('transaction_end', '>=', $now);
+            } elseif ($filter === 'terlambat') {
+                $query->where('transaction_status', 0)->where('transaction_end', '<', $now);
+            } elseif ($filter === 'selesai') {
+                $query->where('transaction_status', 1);
+            }
+        }
+
         $transactions = $query->get();
 
         return Inertia::render(
             'TransactionPage',
             [
                 'transactions' => TransactionResource::collection($transactions),
+                'status_options' => [
+                    [
+                        'label' => 'Aktif',
+                        'value' => 'aktif',
+                    ],
+                    [
+                        'label' => 'Terlambat',
+                        'value' => 'terlambat',
+                    ],
+                    [
+                        'label' => 'Selesai',
+                        'value' => 'selesai',
+                    ],
+                ],
             ],
         );
     }
 
     public function show(string $id)
     {
-        $transaction = Transaction::where('transaction_id', $id)
+        $transaction = Transaction::where('transaction_code', $id)
             ->with('user')
-            ->with('inventarisd.inventaris');
+            ->with('inventarisd.inventaris')
+            ->first();
+
+        return Inertia::render('TransactionDetailPage', [
+            'transaction' => TransactionResource::make($transaction),
+        ]);
     }
 
     public function store(Request $request)
@@ -88,10 +120,19 @@ class TransactionController extends Controller
 
     public function returnTransaction(string $id)
     {
-        Transaction::where('transaction_id', $id)
-            ->update([
-                'transaction_status' => 1,
-            ]);
+        $tx = Transaction::where('transaction_id', $id)
+            ->first();
+
+        $tx->update([
+            'transaction_status' => 1,
+        ]);
+
+        Inventarisd::where('inventarisd_code', $tx->inventarisd()->inventarisd_code)    
+            ->update(
+                [
+                    'inventarisd_status' => 'tersedia'
+                ]
+            );
 
         return redirect()->back()->with('success', 'Transaksi peminjaman berhasil dikembalikan.');
     }

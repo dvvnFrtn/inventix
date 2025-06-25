@@ -42,7 +42,6 @@ export default function InventoryPage({ inventariss, category_options }) {
         })
     }
 
-    console.log(`selectedCategory: ${selectedCategory}`)
     return (
         <>
             <Head title="Inventix - Inventaris" />
@@ -66,16 +65,24 @@ export default function InventoryPage({ inventariss, category_options }) {
                     </div>
                     {
                         props.auth?.user_role !== 'guru' &&
-                        <CreateInventoryRightSheet
-                            categories={category_options?.data}
-                            open={openCreateInventorySheet}
-                            onOpenChange={setOpenCreateInventorySheet}
-                            trigger={(
-                                <Button variant="accentTwo" onClick={() => setOpenCreateInventorySheet(true)}>
-                                    Tambah Unit
-                                </Button>
-                            )}
-                        />
+                        <div className="flex gap-4">
+                            <CreateInventoryRightSheet
+                                categories={category_options?.data}
+                                open={openCreateInventorySheet}
+                                onOpenChange={setOpenCreateInventorySheet}
+                                trigger={(
+                                    <Button variant="accentTwo" onClick={() => setOpenCreateInventorySheet(true)}>
+                                        Tambah Unit
+                                    </Button>
+                                )}
+                            />
+                            <Button
+                                variant="primary"
+                                onClick={() => router.visit('/categories')}
+                            >
+                                Kelola Kategori
+                            </Button>
+                        </div>
                     }
                 </div>
                 {/* eof-Action-Container */}

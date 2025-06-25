@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientGuruController;
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientPetugasController;
+use App\Http\Controllers\Inventix\CategoryController;
 use App\Http\Controllers\Inventix\InventarisController;
 use App\Http\Controllers\Inventix\TransactionController;
 use App\Http\Controllers\Inventix\UserController;
@@ -39,6 +40,11 @@ Route::prefix('transactions')->middleware([AuthMiddleware::class])->group(functi
     Route::get('/', [TransactionController::class, 'index']);
     Route::post('/', [TransactionController::class, 'store']);
     Route::post('/{id}/return', [TransactionController::class, 'returnTransaction']);
+    Route::get('/{id}', [TransactionController::class, 'show']);
+});
+
+Route::prefix('categories')->middleware([AuthMiddleware::class])->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
 });
 
 Route::get('/dashboard', function () {
