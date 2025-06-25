@@ -20,6 +20,7 @@ class Inventaris extends Model
         'inventaris_name',
         'inventaris_desc',
         'category_id',
+        'image_url',
     ];
 
     protected static function boot()

@@ -38,6 +38,7 @@ Route::prefix('users')->middleware([AuthMiddleware::class])->group(function () {
 Route::prefix('transactions')->middleware([AuthMiddleware::class])->group(function () {
     Route::get('/', [TransactionController::class, 'index']);
     Route::post('/', [TransactionController::class, 'store']);
+    Route::post('/{id}/return', [TransactionController::class, 'returnTransaction']);
 });
 
 Route::get('/dashboard', function () {

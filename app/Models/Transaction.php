@@ -79,7 +79,7 @@ class Transaction extends Model
                     'inventaris_name' => optional($item->inventarisd->inventaris)->inventaris_name,
                     'inventarisd_code' => optional($item->inventarisd)->inventarisd_code,
                     'inventarisd_label' => optional($item->inventarisd)->inventarisd_label,
-                ]
+                ],
             ];
         });
     }
@@ -92,35 +92,26 @@ class Transaction extends Model
 
         return [
             'status' => $now->greaterThan($end),
-            'range' => $now->diffInMinutes($end)
+            'range' => $now->diffInMinutes($end),
         ];
     }
 
 
     public function getLateMessageAttribute(): ?string
     {
-        $now = Carbon::now();
-        $end = Carbon::parse($this->transaction_end);
+        $now = Carbon::now()->startOfDay();
+        $end = Carbon::parse($this->transaction_end)->startOfDay();
 
-        $diffInSeconds = $now->diffInSeconds($end, false);
+        $diffInDays = $now->diffInDays($end, false);
 
-        if ($diffInSeconds >= 0) {
-            return null;
+        if ($diffInDays <= 0) {
+            $daysLate = abs($diffInDays);
+            if ($daysLate === 0) {
+                return "Terlambat hari ini";
+            }
+            return "Terlambat $daysLate hari";
         }
 
-        $abs = abs($diffInSeconds);
-        $days = floor($abs / 86400);
-        $hours = floor(($abs % 86400) / 3600);
-        $minutes = floor(($abs % 3600) / 60);
-
-        $timeString = '';
-        if ($days > 0)
-            $timeString .= "$days hari ";
-        if ($hours > 0)
-            $timeString .= "$hours jam ";
-        if ($minutes > 0 || $timeString === '')
-            $timeString .= "$minutes menit";
-
-        return "Terlambat $timeString";
+        return null;
     }
 }

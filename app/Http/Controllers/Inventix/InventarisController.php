@@ -10,8 +10,11 @@ use App\Models\Category;
 use App\Models\Inventaris;
 use App\Models\Inventarisd;
 use App\Models\Kondisi;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class InventarisController extends Controller
@@ -62,18 +65,21 @@ class InventarisController extends Controller
         $inventaris = $query->first();
         $conditions = Kondisi::all();
         $categories = Category::all();
+        $users = User::select('user_id', 'user_fullname', 'user_email')
+            ->where('user_role', 'guru')
+            ->get();
         $statuses = [
             [
                 'id' => 1,
-                'name' => 'tersedia'
+                'name' => 'tersedia',
             ],
             [
                 'id' => 2,
-                'name' => 'terpinjam'
+                'name' => 'terpinjam',
             ],
             [
                 'id' => 3,
-                'name' => 'tiada'
+                'name' => 'tiada',
             ],
         ];
 
@@ -81,7 +87,8 @@ class InventarisController extends Controller
             'inventaris' => InventarisResource::make(resource: $inventaris),
             'condition_options' => KondisiResource::collection(resource: $conditions),
             'status_options' => $statuses,
-            'categories_options' => CategoryResource::collection($categories)
+            'categories_options' => CategoryResource::collection($categories),
+            'user_options' => $users,
         ]);
     }
 
@@ -165,15 +172,31 @@ class InventarisController extends Controller
             'inventaris_name' => 'nullable|string|max:255',
             'inventaris_desc' => 'nullable|string|max:500',
             'category_id' => 'required|string|exists:category,category_id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        $path = null;
+        $imageUrl = null;
+        $inventaris_code = fake()->unique()->numberBetween(100, 999);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '-' . $inventaris_code . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('inventaris', $filename, 'public');
+
+            if ($path) {
+                $imageUrl = Storage::url($path);
+            }
+        }
+
         Inventaris::create([
-            'inventaris_code' => fake()->unique()->numberBetween(100, 999),
+            'inventaris_code' => $inventaris_code,
             'inventaris_name' => $validated['inventaris_name'],
             'inventaris_desc' => $validated['inventaris_desc'],
             'category_id' => $validated['category_id'],
+            'image_url' => $imageUrl,
         ]);
 
-        return redirect()->back()->with('success', 'Barang berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Barang berhasil ditambahkan.');
     }
 }
