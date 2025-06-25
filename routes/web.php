@@ -31,6 +31,13 @@ Route::prefix('inventaris')->group(function () {
     Route::put('/updateUnit/{id}', [InventarisController::class, 'updateUnit']);
 });
 
+Route::prefix('categories')->middleware([AuthMiddleware::class])->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::post('/', [CategoryController::class, 'store']);
+    Route::put('/{id}', [CategoryController::class, 'update']);
+    Route::delete('/{id}', [CategoryController::class, 'destroy']);
+});
+
 Route::prefix('users')->middleware([AuthMiddleware::class])->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{id}', [UserController::class, 'show']);
@@ -44,12 +51,6 @@ Route::prefix('transactions')->middleware([AuthMiddleware::class])->group(functi
     Route::post('/', [TransactionController::class, 'store']);
     Route::post('/{id}/return', [TransactionController::class, 'returnTransaction']);
     Route::get('/{id}', [TransactionController::class, 'show']);
-});
-
-Route::prefix('categories')->middleware([AuthMiddleware::class])->group(function () {
-    Route::get('/', [CategoryController::class, 'index']);
-    Route::post('/', [CategoryController::class, 'store']);
-    Route::put('/{id}', [CategoryController::class, 'update']);
 });
 
 Route::get('/dashboard', function () {
