@@ -139,6 +139,7 @@ export default function IventoryDetailPage({
                             <tr>
                                 <th className="px-6 py-4 font-medium">Kode</th>
                                 <th className="px-6 py-4 font-medium min-w-[250px]">Label</th>
+                                <th className="px-6 py-4 font-medium min-w-[250px]">Deksripsi</th>
                                 <th className="px-6 py-4 font-medium">Kondisi</th>
                                 <th className="px-6 py-4 font-medium">Status</th>
                                 {props.auth?.user_role !== 'guru' && <th className="px-6 py-4 text-right font-medium">Aksi</th>}
@@ -151,6 +152,7 @@ export default function IventoryDetailPage({
                                         <tr key={unit?.id} className="border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors">
                                             <td className="px-6 py-4">{`#${unit?.code}`}</td>
                                             <td className="px-6 py-4">{unit?.label === "" || unit?.label === null ? 'Tidak berlabel' : unit?.label}</td>
+                                            <td className="px-6 py-4">{unit?.label === "" || unit?.desc === null ? '--' : unit?.desc}</td>
                                             <td className="px-6 py-4">{unit?.condition?.name?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</td>
                                             <td className="px-6 py-4"> {unit?.status?.charAt(0).toUpperCase() + unit?.status?.slice(1)}</td>
                                             {

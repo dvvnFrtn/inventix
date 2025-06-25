@@ -1,4 +1,4 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import Table from "@/components/ui/table";
@@ -6,13 +6,27 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import Combobox from "@/components/ui/combobox";
 
-export default function TransactionPage({ transactions: rawTransactions }) {
+export default function TransactionPage({ transactions: rawTransactions, status_options }) {
     const { props } = usePage()
     const flash = props?.flash
 
     const transactions = rawTransactions?.data
     const [selectedTx, setSelectedTx] = React.useState(null)
+    const [selectedSt, setSelectedSt] = React.useState(null)
+
+    const handleStatusChange = (val) => {
+        setSelectedSt(val)
+
+        router.get('/transactions', {
+            status: val !== '' ? val : undefined
+        }, {
+            replace: true,
+            preserveState: true,
+            preserveScroll: true
+        })
+    }
 
     const formatDate = (rawDate) => {
         const date = new Date(rawDate)
@@ -39,7 +53,19 @@ export default function TransactionPage({ transactions: rawTransactions }) {
             <Head title="Inventix - Transactions" />
             <DashboardLayout title={'Peminjaman'} description={'Berikut informasi data transaksi peminjaman'}>
                 <Table
-                    toolbar={<Input placeholder="Cari peminjaman..." />}
+                    toolbar={
+                        <div className="flex gap-4">
+                            <Combobox
+                                buttonLabel={'Status'}
+                                data={status_options}
+                                emptyMessage={'Status tidak ada'}
+                                onChange={handleStatusChange}
+                                placeholder={'Cari status...'}
+                                value={selectedSt}
+                            />
+                            <Input placeholder="Cari peminjaman..." />
+                        </div>
+                    }
                 >
                     <thead className="bg-slate-100 text-left text-slate-500">
                         <tr>
@@ -60,7 +86,11 @@ export default function TransactionPage({ transactions: rawTransactions }) {
                             ? (
                                 transactions?.map((tx) => (
                                     <tr key={tx?.id} className="border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors">
-                                        <td className="px-6 py-4">{`#${tx?.code}`}</td>
+                                        <td className="px-6 py-4">
+                                            <Link href={`/transactions/${tx?.code}`} className="text-itxAccentTwo-500 hover:underline">
+                                                {`#${tx?.code}`}
+                                            </Link>
+                                        </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-2">
                                                 <h6 className="font-medium text-slate-800">{tx?.user?.fullname}</h6>

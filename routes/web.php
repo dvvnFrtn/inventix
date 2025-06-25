@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\ClientGuruController;
 use App\Http\Controllers\ClientHomeController;
 use App\Http\Controllers\ClientPetugasController;
+use App\Http\Controllers\Inventix\CategoryController;
 use App\Http\Controllers\Inventix\InventarisController;
 use App\Http\Controllers\Inventix\TransactionController;
 use App\Http\Controllers\Inventix\UserController;
@@ -14,6 +15,8 @@ use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\AuthPetugasMiddleware;
+use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -40,11 +43,45 @@ Route::prefix('transactions')->middleware([AuthMiddleware::class])->group(functi
     Route::get('/', [TransactionController::class, 'index']);
     Route::post('/', [TransactionController::class, 'store']);
     Route::post('/{id}/return', [TransactionController::class, 'returnTransaction']);
+    Route::get('/{id}', [TransactionController::class, 'show']);
+});
+
+Route::prefix('categories')->middleware([AuthMiddleware::class])->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::post('/', [CategoryController::class, 'store']);
+    Route::put('/{id}', [CategoryController::class, 'update']);
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('DashboardPage');
+    $now = Carbon::now();
+
+    $auth = session()->get('user');
+    $role = $auth['user_role'];
+    $userId = $auth['user_id'];
+
+    $query = Transaction::query();
+
+    if ($role === 'guru') {
+        $query->where('user_id', $userId);
+    }
+
+    $total = (clone $query)->count();
+    $dipinjam = (clone $query)->where('transaction_status', 0)->count();
+    $terlambat = (clone $query)->where('transaction_status', 0)->where('transaction_end', '<', $now)->count();
+
+    return Inertia::render('DashboardPage', [
+        'stat' => [
+            'total' => $total,
+            'dipinjam' => $dipinjam,
+            'terlambat' => $terlambat,
+        ],
+    ]);
+
 })->middleware([AuthMiddleware::class]);
+
+Route::get('/', function () {
+    return Inertia::render('LandingPage');
+});
 
 Route::get('/auth', function () {
     return Inertia::render('Auth/AuthPage');

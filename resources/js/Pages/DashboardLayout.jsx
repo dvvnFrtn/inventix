@@ -2,8 +2,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Link, usePage } from "@inertiajs/react";
-import { Archive, ArrowLeft, ArrowRight, Bell, BookOpen, Home, LayoutGrid, Users } from "lucide-react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { Archive, ArrowLeft, ArrowRight, Bell, BookOpen, Home, LayoutGrid, LogOut, Users } from "lucide-react";
 import { Toaster } from "sonner"
 import React from "react";
 
@@ -23,7 +23,14 @@ const menuItemsGuru = [
 function Sidebar({ collapsed, onCollapsed }) {
     const { url, props } = usePage()
 
-    const menu = props.auth?.user_role !== 'guru' ? menuItems : menuItemsGuru
+    const menuNonGuru = menuItems.filter(item => {
+        if (props?.auth?.user_role === 'petugas' && item.href === '/transactions') {
+            return false
+        }
+        return true
+    })
+
+    const menu = props.auth?.user_role !== 'guru' ? menuNonGuru : menuItemsGuru
 
     return (
         <div
@@ -97,13 +104,9 @@ export default function DashboardLayout({ title, description, children }) {
                             {description && (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
                         </div>
                         <div className="flex flex-row gap-6 items-center">
-                            <Button size={'icon'} variant={'secondary'}>
-                                <Bell size={24} />
+                            <Button size={'icon'} variant={'secondary'} onClick={() => router.get('/logout')}>
+                                <LogOut size={24} />
                             </Button>
-                            <Avatar>
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
                             <div className="flex flex-col gap-2">
                                 <p className="text-slate-500">{auth?.user_fullname}</p>
                                 <Badge className={'bg-violet-200 text-violet-500 font-medium'}>{auth?.user_role}</Badge>
