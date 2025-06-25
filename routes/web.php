@@ -45,6 +45,8 @@ Route::prefix('transactions')->middleware([AuthMiddleware::class])->group(functi
 
 Route::prefix('categories')->middleware([AuthMiddleware::class])->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
+    Route::post('/', [CategoryController::class, 'store']);
+    Route::put('/{id}', [CategoryController::class, 'update']);
 });
 
 Route::get('/dashboard', function () {

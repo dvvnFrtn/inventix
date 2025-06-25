@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 export default function CategoryPage({ categories: raw }) {
     const categories = raw?.data
+
+    const [isEditing, setIsEditing] = React.useState(false)
+    const [selectedCategory, setSelectedCategory] = React.useState(null)
+
     return (
         <>
             <Head title="Inventix - Kategori" />
@@ -26,13 +30,26 @@ export default function CategoryPage({ categories: raw }) {
                         <div className="flex flex-col gap-6 mt-12">
                             {
                                 categories?.map((c) => (
-                                    <CategoryCard category={c} />
+                                    <CategoryCard category={c} onUpdate={() => {
+                                        setSelectedCategory(c)
+                                        setIsEditing(true)
+                                    }} onDelete={() => console.log('delete')} />
                                 ))
                             }
                         </div>
                     </div>
-                    <div className="flex-1 bg-white border border-slate-300 rounded-3xl">
-
+                    <div className="flex-1 bg-white border border-slate-300 rounded-3xl p-6">
+                        {
+                            isEditing
+                                ? <div className="flex flex-col gap-14">
+                                    <UpdateFormHeader />
+                                    <UpdateForm selectedCategory={selectedCategory} onCancel={() => setIsEditing(false)} onSuccess={setIsEditing(false)} />
+                                </div>
+                                : <div className="flex flex-col gap-14">
+                                    <CreateFormHeader />
+                                    <CreateForm />
+                                </div>
+                        }
                     </div>
                 </div>
             </DashboardLayout>
@@ -40,7 +57,7 @@ export default function CategoryPage({ categories: raw }) {
     )
 }
 
-function CategoryCard({ category }) {
+function CategoryCard({ category, onUpdate, onDelete }) {
     return (
         <div className="p-6 rounded-2xl bg-itxSurface border border-slate-300">
             <div className="flex flex-col gap-2">
@@ -53,14 +70,34 @@ function CategoryCard({ category }) {
                         <Button
                             size={'sm'}
                             variant={'accentOne'}
+                            onClick={onUpdate}
                         >Edit</Button>
                         <Button
                             size={'sm'}
                             variant={'destructive'}
+                            onClick={onDelete}
                         >Hapus</Button>
                     </div>
                 )
             }
+        </div>
+    )
+}
+
+function UpdateFormHeader() {
+    return (
+        <div className="flex flex-col gap-2">
+            <h4 className="text-lg font-medium text-slate-800">Edit Kategori</h4>
+            <p className="text-sm text-slate-500">Isi form dibawah ini untuk memperbarui kategori</p>
+        </div>
+    )
+}
+
+function CreateFormHeader() {
+    return (
+        <div className="flex flex-col gap-2">
+            <h4 className="text-lg font-medium text-slate-800">Tambah Kategori</h4>
+            <p className="text-sm text-slate-500">Isi form dibawah ini untuk menambah kategori</p>
         </div>
     )
 }
@@ -124,7 +161,7 @@ function CreateForm() {
 }
 
 
-function UpdateForm({ selectedCategory }) {
+function UpdateForm({ selectedCategory, onCancel, onSuccess }) {
     const form = useForm({
         resolver: zodResolver(UpdateShcema),
         defaultValues: {
@@ -134,9 +171,13 @@ function UpdateForm({ selectedCategory }) {
     })
 
     const onSubmit = (data) => {
-        router.put(`/categories/${selectedCategory?.code}`, {
+        router.put(`/categories/${selectedCategory?.id}`, {
             category_name: data.name,
             category_desc: data.description
+        }, {
+            onSuccess: () => {
+                onSuccess?.()
+            }
         })
     }
 
@@ -170,6 +211,7 @@ function UpdateForm({ selectedCategory }) {
                     )}
                 />
                 <Button variant={'accentOne'} type={'submit'}>Simpan</Button>
+                <Button variant={'secondary'} onClick={onCancel} className={'mt-6'}>Batal</Button>
             </form>
         </Form>
     )

@@ -18,4 +18,41 @@ class CategoryController extends Controller
             'categories' => CategoryResource::collection($categories),
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_name' => 'required|string',
+            'category_desc' => 'nullable|string',
+        ]);
+
+        Category::create([
+            'category_code' => fake()->unique()->numberBetween(100, 999),
+            'category_name' => $validated['category_name'],
+            'category_desc' => $validated['category_desc'],
+        ]);
+
+        return redirect()->back()->with('success', 'Kategori berhasil ditambahkan');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'category_name' => 'required|string',
+            'category_desc' => 'nullable|string',
+        ]);
+
+        Category::where('category_id', $id)
+            ->update([
+                'category_name' => $validated['category_name'],
+                'category_desc' => $validated['category_desc'],
+            ]);
+
+        return redirect()->back()->with('success', 'Kategori berhasil diperbarui');
+    }
+
+    public function destroy(string $id)
+    {
+
+    }
 }
