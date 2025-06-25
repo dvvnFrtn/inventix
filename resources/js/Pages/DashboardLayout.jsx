@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { Archive, ArrowLeft, ArrowRight, Bell, BookOpen, Home, LayoutGrid, LogOut, Users } from "lucide-react";
 import { Toaster } from "sonner"
 import React from "react";
@@ -97,7 +97,7 @@ export default function DashboardLayout({ title, description, children }) {
                             {description && (<p className="text-sm text-slate-500 text-ellipsis text-nowrap">{description}</p>)}
                         </div>
                         <div className="flex flex-row gap-6 items-center">
-                            <Button size={'icon'} variant={'secondary'}>
+                            <Button size={'icon'} variant={'secondary'} onClick={() => router.get('/logout')}>
                                 <LogOut size={24} />
                             </Button>
                             <div className="flex flex-col gap-2">
