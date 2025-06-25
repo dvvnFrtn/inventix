@@ -53,7 +53,10 @@ function Sidebar({ collapsed, onCollapsed }) {
 
                 <nav className="flex flex-col gap-4">
                     {menu.map((item, index) => {
-                        const isActive = url.startsWith(item.href)
+                        const isInventaris = item.href === '/inventaris';
+                        const isActive = isInventaris
+                            ? url === '/inventaris' || url.startsWith('/categories')
+                            : url.startsWith(item.href);
                         return (
                             <Link
                                 preserveState

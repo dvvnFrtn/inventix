@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Inventix;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\Inventaris;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -53,6 +54,14 @@ class CategoryController extends Controller
 
     public function destroy(string $id)
     {
+        $category = Category::findOrFail($id);
+        $fallbackCategory = Category::where('category_name', 'tidak ada')->first();
 
+        Inventaris::where('category_id', $category->category_id)
+            ->update(['category_id' => $fallbackCategory->category_id]);
+
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Kategori berhasil dihapus.');
     }
 }

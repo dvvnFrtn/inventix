@@ -7,12 +7,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function CategoryPage({ categories: raw }) {
     const categories = raw?.data
 
     const [isEditing, setIsEditing] = React.useState(false)
     const [selectedCategory, setSelectedCategory] = React.useState(null)
+    const [openAlertDelete, setOpenAlertDelete] = React.useState(false)
 
     return (
         <>
@@ -33,7 +35,10 @@ export default function CategoryPage({ categories: raw }) {
                                     <CategoryCard category={c} onUpdate={() => {
                                         setSelectedCategory(c)
                                         setIsEditing(true)
-                                    }} onDelete={() => console.log('delete')} />
+                                    }} onDelete={() => {
+                                        setSelectedCategory(c)
+                                        setOpenAlertDelete(true)
+                                    }} />
                                 ))
                             }
                         </div>
@@ -52,6 +57,12 @@ export default function CategoryPage({ categories: raw }) {
                         }
                     </div>
                 </div>
+                <DeleteAlertDialog
+                    open={openAlertDelete}
+                    onOpenChange={setOpenAlertDelete}
+                    selectedCategory={selectedCategory}
+                    onSucces={() => setOpenAlertDelete(false)}
+                />
             </DashboardLayout>
         </>
     )
@@ -223,3 +234,39 @@ const UpdateShcema = z.object({
     }),
     description: z.string().nullable()
 })
+
+function DeleteAlertDialog({
+    open,
+    onOpenChange,
+    selectedCategory,
+    onSucces,
+}) {
+    const handleDelete = () => {
+        router.delete(`/categories/${selectedCategory?.id}`, {
+            onSuccess: onSucces,
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>
+                        Hapus Unit
+                    </DialogTitle>
+                    <DialogDescription>
+                        {`Apakah anda yakin ingin menghapus unit barang ${selectedCategory?.code}?`}
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant={'secondary'} >Batal</Button>
+                    </DialogClose>
+                    <Button variant={'destructive'} onClick={handleDelete}>Hapus</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
