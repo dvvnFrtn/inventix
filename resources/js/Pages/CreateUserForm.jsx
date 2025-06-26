@@ -18,7 +18,7 @@ const FormSchema = z.object({
     name: z.string().nonempty({
         message: 'Nama lengkap wajib diisi'
     }),
-    role: z.enum(['admin', 'petugas', 'guru'])
+    role: z.enum(['petugas', 'guru'])
 })
 
 export default function CreateUserForm({ onClose }) {

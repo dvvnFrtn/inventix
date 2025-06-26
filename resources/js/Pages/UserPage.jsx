@@ -25,10 +25,13 @@ export default function UserPage({ users: listUsers, role_options }) {
     const [openUpdateUserSheet, setOpenUpdateUserSheet] = React.useState(false)
     const [openDeleteUserDialog, setOpenDeleteUserDialog] = React.useState(false)
 
+    const [search, setSearch] = React.useState('')
+
     const handleRoleChange = (val) => {
         setSelectedRole(val)
 
         router.get('/users', {
+            search: search !== '' ? search : undefined,
             role: val !== '' ? val : undefined
         }, {
             replace: true,
@@ -56,6 +59,25 @@ export default function UserPage({ users: listUsers, role_options }) {
         }
     }, [flash])
 
+    React.useEffect(() => {
+        const delay = setTimeout(() => {
+            router.get('/users', {
+                search: search || undefined,
+                role: selectedRole || undefined
+            }, {
+                replace: true,
+                preserveScroll: true,
+                preserveState: true,
+            })
+        }, 500)
+
+        return () => clearTimeout(delay)
+    }, [search])
+
+    const sortedUsers = [...users].sort((a, b) => {
+        return (a.role === 'admin' ? 0 : 1) - (b.role === 'admin' ? 0 : 1)
+    })
+
     return (
         <>
             <Head title='Inventix - User' />
@@ -76,7 +98,11 @@ export default function UserPage({ users: listUsers, role_options }) {
                                         placeholder={'Cari role...'}
                                         value={selectedRole}
                                     />
-                                    <Input placeholder="Cari user..." />
+                                    <Input
+                                        placeholder="Cari user..."
+                                        value={search}
+                                        onChange={(val) => setSearch(val.target.value)} />
+
                                 </div>
                                 <CreateUserRightSheet
                                     open={openCreateUserSheet}
@@ -104,9 +130,9 @@ export default function UserPage({ users: listUsers, role_options }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {users?.length > 0
+                            {sortedUsers?.length > 0
                                 ? (
-                                    users?.map((user) => (
+                                    sortedUsers?.map((user) => (
                                         <tr
                                             key={user?.id}
                                             className="cursor-pointer border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors"
@@ -136,16 +162,18 @@ export default function UserPage({ users: listUsers, role_options }) {
                                                     >
                                                         <Edit />
                                                     </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="destructive"
-                                                        onClick={() => {
-                                                            setSelectedUser(user)
-                                                            setOpenDeleteUserDialog(true)
-                                                        }}
-                                                    >
-                                                        <Trash2 />
-                                                    </Button>
+                                                    {user?.role !== 'admin' &&
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            onClick={() => {
+                                                                setSelectedUser(user)
+                                                                setOpenDeleteUserDialog(true)
+                                                            }}
+                                                        >
+                                                            <Trash2 />
+                                                        </Button>
+                                                    }
                                                 </div>
                                             </td>
                                         </tr>
@@ -154,7 +182,7 @@ export default function UserPage({ users: listUsers, role_options }) {
                                 : (
                                     <tr>
                                         <td colSpan={6} className="text-center py-6 text-slate-400">
-                                            Tidak ada data ditemukan.
+                                            Tidak ada data user ditemukan.
                                         </td>
                                     </tr>
                                 )

@@ -19,20 +19,28 @@ class UserController extends Controller
             $query->where('user_role', $request->role);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('user_fullname', 'like', "%{$search}%")
+                    ->orWhere('user_email', 'like', "%{$search}%");
+            });
+        }
+
         $users = $query->get();
 
         $role_options = [
             [
                 'id' => 1,
-                'name' => 'admin'
+                'name' => 'admin',
             ],
             [
                 'id' => 2,
-                'name' => 'petugas'
+                'name' => 'petugas',
             ],
             [
                 'id' => 3,
-                'name' => 'guru'
+                'name' => 'guru',
             ],
         ];
 
@@ -40,8 +48,8 @@ class UserController extends Controller
             'UserPage',
             [
                 'users' => UserResource::collection($users),
-                'role_options' => $role_options
-            ]
+                'role_options' => $role_options,
+            ],
         );
     }
 
@@ -54,8 +62,8 @@ class UserController extends Controller
         return Inertia::render(
             'UserDetailPage',
             [
-                'user' => UserResource::make($user)
-            ]
+                'user' => UserResource::make($user),
+            ],
         );
     }
 
@@ -66,14 +74,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'user_pass' => 'nullable|string|min:6',
             'user_fullname' => 'required|string|max:255',
-            'user_role' => 'required|in:guru,petugas,admin',
         ]);
 
         if (!empty($validated['user_pass'])) {
             $user->user_pass = Hash::make($validated['user_pass']);
         }
         $user->user_fullname = $validated['user_fullname'];
-        $user->user_role = $validated['user_role'];
         $user->save();
 
         return redirect()->back()->with('success', 'User berhasil diperbarui.');

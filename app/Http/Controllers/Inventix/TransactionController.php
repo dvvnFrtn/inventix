@@ -39,7 +39,10 @@ class TransactionController extends Controller
             }
         }
 
-        $transactions = $query->get();
+        $transactions = $query
+            ->orderBy('created_at', 'desc')
+            ->orderBy('transaction_start', 'desc')
+            ->get();
 
         return Inertia::render(
             'TransactionPage',
