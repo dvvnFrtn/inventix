@@ -280,11 +280,11 @@ function InventoryDetailCard({
         <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300">
 
             {/* sof-Image-Container */}
-            <div className="relative">
+            <div className="relative aspect-square">
                 <img
                     src={inventory?.image_url}
                     alt="Inventaris"
-                    className="h-auto w-full object-cover"
+                    className="h-full w-full object-cover"
                 />
                 <Badge className="absolute top-6 right-6  py-2 px-4 text-base bg-itxPrimary-500 text-itxSurface">
                     {`#${inventory?.code}`}

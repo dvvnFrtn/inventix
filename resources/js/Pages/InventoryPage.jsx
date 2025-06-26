@@ -116,7 +116,7 @@ function InventoryCard({ inventaris }) {
                 <div className="flex flex-col h-full rounded-4xl overflow-hidden bg-white border border-slate-300">
 
                     {/* Image Container */}
-                    <div className="relative aspect-[4/3]">
+                    <div className="relative aspect-[4/3] h-1/2">
                         <img
                             src={inventaris?.image_url}
                             alt="Inventaris"
