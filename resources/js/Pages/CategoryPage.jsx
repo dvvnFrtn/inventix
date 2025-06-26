@@ -1,4 +1,4 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import React from "react";
 import DashboardLayout from "./DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -8,13 +8,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 export default function CategoryPage({ categories: raw }) {
+    const { props } = usePage()
+    const flash = props?.flash
+
     const categories = raw?.data
 
     const [isEditing, setIsEditing] = React.useState(false)
     const [selectedCategory, setSelectedCategory] = React.useState(null)
     const [openAlertDelete, setOpenAlertDelete] = React.useState(false)
+
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success)
+        }
+        if (flash?.error) {
+            toast.error(flash.error)
+        }
+    }, [flash])
 
     return (
         <>
@@ -32,13 +45,17 @@ export default function CategoryPage({ categories: raw }) {
                         <div className="flex flex-col gap-6 mt-12">
                             {
                                 categories?.map((c) => (
-                                    <CategoryCard key={c?.id} category={c} onUpdate={() => {
-                                        setSelectedCategory(c)
-                                        setIsEditing(true)
-                                    }} onDelete={() => {
-                                        setSelectedCategory(c)
-                                        setOpenAlertDelete(true)
-                                    }} />
+                                    <CategoryCard
+                                        key={c?.id}
+                                        category={c}
+                                        onUpdate={() => {
+                                            setSelectedCategory(c)
+                                            setIsEditing(true)
+                                        }}
+                                        onDelete={() => {
+                                            setSelectedCategory(c)
+                                            setOpenAlertDelete(true)
+                                        }} />
                                 ))
                             }
                         </div>
@@ -48,7 +65,11 @@ export default function CategoryPage({ categories: raw }) {
                             isEditing
                                 ? <div className="flex flex-col gap-14">
                                     <UpdateFormHeader />
-                                    <UpdateForm selectedCategory={selectedCategory} onCancel={() => setIsEditing(false)} onSuccess={setIsEditing(false)} />
+                                    <UpdateForm
+                                        selectedCategory={selectedCategory}
+                                        onCancel={() => setIsEditing(false)}
+                                        onSuccess={() => setIsEditing(false)}
+                                    />
                                 </div>
                                 : <div className="flex flex-col gap-14">
                                     <CreateFormHeader />
@@ -133,6 +154,8 @@ function CreateForm() {
         router.post('/categories', {
             category_name: data.name,
             category_desc: data.description
+        }, {
+            onSuccess: () => form.reset()
         })
     }
 
@@ -176,10 +199,20 @@ function UpdateForm({ selectedCategory, onCancel, onSuccess }) {
     const form = useForm({
         resolver: zodResolver(UpdateShcema),
         defaultValues: {
-            name: selectedCategory?.name || '',
-            description: selectedCategory?.desc || ''
+            name: '',
+            description: ''
         }
     })
+
+    React.useEffect(() => {
+        console.log(selectedCategory)
+        if (selectedCategory) {
+            form.reset({
+                name: selectedCategory.name || '',
+                description: selectedCategory.desc || '',
+            })
+        }
+    }, [selectedCategory])
 
     const onSubmit = (data) => {
         router.put(`/categories/${selectedCategory?.id}`, {
