@@ -37,7 +37,7 @@ export default function CategoryPage({ categories: raw }) {
                 description={'Kelola informasi data kategori'}
             >
                 <div className="flex gap-6 h-screen w-full">
-                    <div className="flex-1 bg-white border border-slate-300 rounded-3xl p-6">
+                    <div className="flex-1 bg-white border border-slate-300 rounded-3xl p-6 overflow-auto">
                         <div className="flex flex-col gap2">
                             <h3 className="text-xl text-slate-800 font-medium">Daftar Kategori</h3>
                             <p className="text-sm text-slate-500">Berikut daftar data kategori yang tersedia.</p>
