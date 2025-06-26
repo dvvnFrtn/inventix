@@ -72,7 +72,7 @@ export default function InventoryPage({ inventariss, category_options }) {
                                 onOpenChange={setOpenCreateInventorySheet}
                                 trigger={(
                                     <Button variant="accentTwo" onClick={() => setOpenCreateInventorySheet(true)}>
-                                        Tambah Unit
+                                        Tambah Barang
                                     </Button>
                                 )}
                             />
