@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function DashboardPage({ stat }) {
     const { props } = usePage()
-    console.log(stat)
 
     return (
         <>

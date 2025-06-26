@@ -23,15 +23,14 @@ export default function CreateInventoryUnitForm({ inventaris_id, conditions, onC
         resolver: zodResolver(FormSchema),
         defaultValues: {
             inventaris_id: inventaris_id,
-            label: null,
-            description: null,
+            label: '',
+            description: '',
             status: 'tersedia',
             condition_id: ''
         }
     })
 
     const onSubmit = (data) => {
-        console.log(data)
         router.post('/inventaris/storeUnit', {
             inventaris_id: data.inventaris_id,
             inventarisd_label: data.label,
