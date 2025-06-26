@@ -27,7 +27,7 @@ export default function UpdateInventoryUnitForm({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             label: updatedUnit?.label ?? '',
-            description: updatedUnit?.desc ?? '',
+            description: updatedUnit?.description ?? '',
             status: updatedUnit?.status,
             condition_id: updatedUnit?.condition?.id
         }

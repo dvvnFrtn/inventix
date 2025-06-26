@@ -21,8 +21,6 @@ export default function IventoryDetailPage({
     const { props } = usePage()
     const flash = props.flash
 
-    console.log(user_options)
-
     // Filtering-State
     const [filters, setFilters] = React.useState({
         status: '',
@@ -150,8 +148,8 @@ export default function IventoryDetailPage({
                                     units?.map((unit) => (
                                         <tr key={unit?.id} className="border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors">
                                             <td className="px-6 py-4">{`#${unit?.code}`}</td>
-                                            <td className="px-6 py-4">{unit?.label === "" || unit?.label === null ? 'Tidak berlabel' : unit?.label}</td>
-                                            <td className="px-6 py-4">{unit?.label === "" || unit?.desc === null ? '--' : unit?.desc}</td>
+                                            <td className="px-6 py-4">{unit?.label || 'Tidak berlabel'}</td>
+                                            <td className="px-6 py-4">{unit?.description || '--'}</td>
                                             <td className="px-6 py-4">{unit?.condition?.name?.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</td>
                                             <td className="px-6 py-4"> {unit?.status?.charAt(0).toUpperCase() + unit?.status?.slice(1)}</td>
                                             {
@@ -181,17 +179,19 @@ export default function IventoryDetailPage({
                                                             <Trash2 />
                                                         </Button>
 
-                                                        <Button
-                                                            disabled={unit?.status === 'terpinjam'}
-                                                            size="sm"
-                                                            variant="primary"
-                                                            onClick={() => {
-                                                                setSelectedUnit(unit)
-                                                                setOpenCreateTransactionSheet(true)
-                                                            }}
-                                                        >
-                                                            Pinjamkan
-                                                        </Button>
+                                                        {props?.auth?.user_role === 'admin' &&
+                                                            <Button
+                                                                disabled={unit?.status === 'terpinjam'}
+                                                                size="sm"
+                                                                variant="primary"
+                                                                onClick={() => {
+                                                                    setSelectedUnit(unit)
+                                                                    setOpenCreateTransactionSheet(true)
+                                                                }}
+                                                            >
+                                                                Pinjamkan
+                                                            </Button>
+                                                        }
                                                     </div>
                                                 </td>
                                             }
@@ -276,7 +276,7 @@ function InventoryDetailCard({
     const { props } = usePage()
     return (
         /* sof-Container */
-        <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300">
+        <div className="w-full rounded-4xl overflow-hidden bg-white border border-slate-300">
 
             {/* sof-Image-Container */}
             <div className="relative aspect-square">

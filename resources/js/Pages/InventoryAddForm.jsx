@@ -44,7 +44,6 @@ export default function CreateInventoryForm({
             onSuccess: () => {
                 onClose?.()
             },
-            onError: (e) => console.log(e),
             forceFormData: true
         })
     }

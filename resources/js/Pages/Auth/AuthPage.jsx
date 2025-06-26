@@ -1,10 +1,24 @@
 import React from 'react'
 import { Head, usePage } from '@inertiajs/react'
 import LoginForm from './LoginForm'
+import { toast, Toaster } from 'sonner'
 
 export default function AuthPage() {
+    const { props } = usePage()
+    const flash = props.flash
+
+    React.useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success)
+        }
+        if (flash?.error) {
+            toast.error(flash.error)
+        }
+    }, [flash])
+
     return (
         <>
+            <Toaster richColors position="top-right" />
             <Head title='Inventix - Auth' />
             <div className='flex flex-row bg-itxPrimary-500 h-screen p-4'>
                 <div className="flex flex-1 justify-center items-center rounded-lg bg-itxSurface">

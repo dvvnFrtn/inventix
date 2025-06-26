@@ -15,6 +15,7 @@ use App\Http\Middleware\AuthAdminMiddleware;
 use App\Http\Middleware\AuthGuruMiddleware;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\AuthPetugasMiddleware;
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -70,12 +71,23 @@ Route::get('/dashboard', function () {
     $dipinjam = (clone $query)->where('transaction_status', 0)->count();
     $terlambat = (clone $query)->where('transaction_status', 0)->where('transaction_end', '<', $now)->count();
 
+    $transactions = Transaction::query()
+        ->with('user')
+        ->with('inventarisd.inventaris')
+        ->when($role === 'guru', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->orderBy('created_at', 'desc')
+        ->take(5)
+        ->get();
+
     return Inertia::render('DashboardPage', [
         'stat' => [
             'total' => $total,
             'dipinjam' => $dipinjam,
             'terlambat' => $terlambat,
         ],
+        'transaction_history' => TransactionResource::collection($transactions),
     ]);
 
 })->middleware([AuthMiddleware::class]);

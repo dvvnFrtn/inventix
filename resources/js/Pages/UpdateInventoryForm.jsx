@@ -46,7 +46,6 @@ export default function UpdateInventoryForm({
             onSuccess: () => {
                 onClose?.()
             },
-            onError: (e) => console.log(e),
         })
     }
 
