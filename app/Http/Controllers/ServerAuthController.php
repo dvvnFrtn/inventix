@@ -33,7 +33,7 @@ class ServerAuthController extends Controller
             if ($user_collect->user_role === 'guru') {
                 session([
                     'is_guru' => true,
-                    'user' => $user
+                    'user' => $user,
                 ]);
             } elseif ($user_collect->user_role === 'admin') {
                 session([
@@ -44,14 +44,14 @@ class ServerAuthController extends Controller
                 session(
                     [
                         'is_petugas' => true,
-                        'user' => $user
-                    ]
+                        'user' => $user,
+                    ],
                 );
             }
 
             return redirect('/dashboard');
         }
 
-        return redirect()->back()->with('error', 'Autentikasi gagal. Email atau password salah.')->withInput();
+        return redirect()->back()->with('error', 'Autentikasi gagal. Email atau password salah.');
     }
 }

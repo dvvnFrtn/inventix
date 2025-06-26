@@ -24,7 +24,7 @@ function Sidebar({ collapsed, onCollapsed }) {
     const { url, props } = usePage()
 
     const menuNonGuru = menuItems.filter(item => {
-        if (props?.auth?.user_role === 'petugas' && item.href === '/transactions') {
+        if (props?.auth?.user_role === 'petugas' && (item.href === '/transactions' || item.href === '/users')) {
             return false
         }
         return true

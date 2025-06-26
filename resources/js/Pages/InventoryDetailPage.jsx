@@ -179,17 +179,19 @@ export default function IventoryDetailPage({
                                                             <Trash2 />
                                                         </Button>
 
-                                                        <Button
-                                                            disabled={unit?.status === 'terpinjam'}
-                                                            size="sm"
-                                                            variant="primary"
-                                                            onClick={() => {
-                                                                setSelectedUnit(unit)
-                                                                setOpenCreateTransactionSheet(true)
-                                                            }}
-                                                        >
-                                                            Pinjamkan
-                                                        </Button>
+                                                        {props?.auth?.user_role === 'admin' &&
+                                                            <Button
+                                                                disabled={unit?.status === 'terpinjam'}
+                                                                size="sm"
+                                                                variant="primary"
+                                                                onClick={() => {
+                                                                    setSelectedUnit(unit)
+                                                                    setOpenCreateTransactionSheet(true)
+                                                                }}
+                                                            >
+                                                                Pinjamkan
+                                                            </Button>
+                                                        }
                                                     </div>
                                                 </td>
                                             }
@@ -274,7 +276,7 @@ function InventoryDetailCard({
     const { props } = usePage()
     return (
         /* sof-Container */
-        <div className="w-full max-w-md rounded-4xl overflow-hidden bg-white border border-slate-300">
+        <div className="w-full rounded-4xl overflow-hidden bg-white border border-slate-300">
 
             {/* sof-Image-Container */}
             <div className="relative aspect-square">
