@@ -116,7 +116,6 @@ export default function IventoryDetailPage({
                                         onChange={handleConditionChange}
                                         width='w-[150px]'
                                     />
-                                    <Input placeholder="Cari unit..." />
                                 </div>
                                 {
                                     props.auth?.user_role !== 'guru' &&

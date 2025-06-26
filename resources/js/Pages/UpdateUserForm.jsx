@@ -13,7 +13,6 @@ const FormSchema = z.object({
     name: z.string().nonempty({
         message: 'Nama lengkap wajib diisi'
     }),
-    role: z.enum(['admin', 'petugas', 'guru'])
 })
 
 export default function UpdateUserForm({ updatedUser, onClose }) {
@@ -22,7 +21,6 @@ export default function UpdateUserForm({ updatedUser, onClose }) {
         defaultValues: {
             name: updatedUser?.fullname ?? '',
             pass: updatedUser?.pass ?? '',
-            role: updatedUser?.role ?? 'guru'
         }
     })
 
@@ -30,7 +28,6 @@ export default function UpdateUserForm({ updatedUser, onClose }) {
         router.put(`/users/${updatedUser?.id}`, {
             user_pass: data.pass,
             user_fullname: data.name,
-            user_role: data.role
         }, {
             onSuccess: () => {
                 onClose?.()
@@ -64,39 +61,6 @@ export default function UpdateUserForm({ updatedUser, onClose }) {
                             <FormControl>
                                 <Input placeholder='Ganti password user'  {...field} type={'password'} />
                             </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select
-                                onValueChange={field.onChange}
-                                value={field.value ? String(field.value) : undefined}
-                                defaultValue={field.value ? String(field.value) : undefined}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Pilih role..." />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem key={1} value={'guru'}>
-                                        Guru
-                                    </SelectItem>
-                                    <SelectItem key={2} value={'petugas'}>
-                                        Petugas
-                                    </SelectItem>
-                                    <SelectItem key={3} value={'admin'}>
-                                        Admin
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
                             <FormMessage />
                         </FormItem>
                     )}

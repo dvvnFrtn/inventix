@@ -56,6 +56,10 @@ export default function UserPage({ users: listUsers, role_options }) {
         }
     }, [flash])
 
+    const sortedUsers = [...users].sort((a, b) => {
+        return (a.role === 'admin' ? 0 : 1) - (b.role === 'admin' ? 0 : 1)
+    })
+
     return (
         <>
             <Head title='Inventix - User' />
@@ -104,9 +108,9 @@ export default function UserPage({ users: listUsers, role_options }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {users?.length > 0
+                            {sortedUsers?.length > 0
                                 ? (
-                                    users?.map((user) => (
+                                    sortedUsers?.map((user) => (
                                         <tr
                                             key={user?.id}
                                             className="cursor-pointer border-t border-slate-200 hover:bg-itxAccentTwo-100 transition-colors"
@@ -136,16 +140,18 @@ export default function UserPage({ users: listUsers, role_options }) {
                                                     >
                                                         <Edit />
                                                     </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="destructive"
-                                                        onClick={() => {
-                                                            setSelectedUser(user)
-                                                            setOpenDeleteUserDialog(true)
-                                                        }}
-                                                    >
-                                                        <Trash2 />
-                                                    </Button>
+                                                    {user?.role !== 'admin' &&
+                                                        <Button
+                                                            size="sm"
+                                                            variant="destructive"
+                                                            onClick={() => {
+                                                                setSelectedUser(user)
+                                                                setOpenDeleteUserDialog(true)
+                                                            }}
+                                                        >
+                                                            <Trash2 />
+                                                        </Button>
+                                                    }
                                                 </div>
                                             </td>
                                         </tr>

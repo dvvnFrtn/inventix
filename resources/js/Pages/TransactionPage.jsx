@@ -63,7 +63,6 @@ export default function TransactionPage({ transactions: rawTransactions, status_
                                 placeholder={'Cari status...'}
                                 value={selectedSt}
                             />
-                            <Input placeholder="Cari peminjaman..." />
                         </div>
                     }
                 >

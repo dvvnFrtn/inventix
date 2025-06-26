@@ -17,7 +17,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $roles = ['admin', 'petugas', 'guru'];
+        $roles = ['petugas', 'guru'];
         return [
             'user_email' => $this->faker->unique()->safeEmail(),
             'user_pass' => Hash::make('password'), // password default untuk testing
