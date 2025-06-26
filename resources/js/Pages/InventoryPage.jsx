@@ -13,7 +13,7 @@ export default function InventoryPage({ inventariss, category_options }) {
     const { props } = usePage()
     const flash = props.flash
 
-    console.log(inventariss)
+    const [search, setSearch] = React.useState('')
 
     const [openCreateInventorySheet, setOpenCreateInventorySheet] = React.useState(false)
 
@@ -34,13 +34,29 @@ export default function InventoryPage({ inventariss, category_options }) {
         setSelectedCategory(val)
 
         router.get('/inventaris', {
-            category: val !== '' ? Number(val) : undefined
+            category: val !== '' ? Number(val) : undefined,
+            search: search || undefined
         }, {
             replace: true,
             preserveState: true,
             preserveScroll: true
         })
     }
+
+    React.useEffect(() => {
+        const delay = setTimeout(() => {
+            router.get('/inventaris', {
+                search: search || undefined,
+                category: selectedCategory || undefined,
+            }, {
+                replace: true,
+                preserveScroll: true,
+                preserveState: true,
+            })
+        }, 500)
+
+        return () => clearTimeout(delay)
+    }, [search])
 
     return (
         <>
@@ -61,7 +77,11 @@ export default function InventoryPage({ inventariss, category_options }) {
                             value={selectedCategory}
                         />
 
-                        <Input placeholder='Cari barang disini...' />
+                        <Input
+                            placeholder='Cari barang disini...'
+                            value={search}
+                            onChange={(val) => setSearch(val.target.value)}
+                        />
                     </div>
                     {
                         props.auth?.user_role !== 'guru' &&
@@ -94,6 +114,11 @@ export default function InventoryPage({ inventariss, category_options }) {
                 )}
 
                 {/* sof-Grid-Container */}
+                {inventories?.length === 0 &&
+                    <div className="w-full py-36 flex justify-center items-center">
+                        <p className="text-sm text-slate-500">Barang tidak ditemukan.</p>
+                    </div>
+                }
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {inventories?.map((inventaris) => (
                         <InventoryCard

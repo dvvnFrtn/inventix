@@ -30,6 +30,11 @@ class InventarisController extends Controller
             });
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('inventaris_name', 'like', "%{$search}%");
+        }
+
         $inventariss = $query->orderBy(column: 'created_at')
             ->get();
 

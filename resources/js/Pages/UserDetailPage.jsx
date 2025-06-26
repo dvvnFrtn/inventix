@@ -55,9 +55,7 @@ export default function UserDetailPage({ user: rawUser }) {
                             setOpenDeleteUserDialog(true)
                         }}
                     />
-                    <Table
-                        toolbar={<Input placeholder="Cari peminjaman..." />}
-                    >
+                    <Table>
                         <thead className="bg-slate-100 text-left text-slate-500">
                             <tr>
                                 <th className="px-6 py-4 font-medium">Kode</th>
