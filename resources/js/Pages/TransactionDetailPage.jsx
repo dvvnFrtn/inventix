@@ -154,9 +154,8 @@ export default function TransactionDetailPage({ transaction: raw }) {
 
 function renderStatus(status) {
     switch (status) {
-        case 1: return 'Dipinjam';
-        case 2: return 'Selesai';
-        case 3: return 'Dibatalkan';
+        case 0: return 'Aktif';
+        case 1: return 'Selesai';
         default: return 'Tidak diketahui';
     }
 }
